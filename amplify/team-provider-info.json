@@ -1,0 +1,20 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-aibusinessanalyzera-dev-c0230-authRole",
+      "UnauthRoleArn": "arn:aws:iam::273641666957:role/amplify-aibusinessanalyzera-dev-c0230-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::273641666957:role/amplify-aibusinessanalyzera-dev-c0230-authRole",
+      "Region": "us-east-2",
+      "DeploymentBucketName": "amplify-aibusinessanalyzera-dev-c0230-deployment",
+      "UnauthRoleName": "amplify-aibusinessanalyzera-dev-c0230-unauthRole",
+      "StackName": "amplify-aibusinessanalyzera-dev-c0230",
+      "StackId": "arn:aws:cloudformation:us-east-2:273641666957:stack/amplify-aibusinessanalyzera-dev-c0230/960a64d0-34a0-11ef-af8d-023a45acd2e3",
+      "AmplifyAppId": "d38usaxovvgc8j"
+    },
+    "categories": {
+      "auth": {
+        "aibusinessanalyzera5a4aea39": {}
+      }
+    }
+  }
+}

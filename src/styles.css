@@ -1,0 +1,254 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #d4e6f1; /* Light Steel Blue background */
+}
+
+header {
+  text-align: center;
+  background: #f7f7f7; /* Light background */
+  padding: 20px 0;
+  border-bottom: 1px solid #ddd;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.navbar {
+  display: flex;
+  justify-content: center;
+  background-color: #4b79a1; /* Blue background */
+  padding: 10px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar a {
+  margin: 0 15px;
+  text-decoration: none;
+  color: #fff;
+  font-size: 18px;
+  padding: 10px 15px;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.navbar a:hover {
+  background-color: #366699; /* Darker blue */
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background: #d4e6f1; /* Light Steel Blue background */
+}
+
+h1 {
+  font-size: 48px; /* Increased font size */
+  margin: 20px 0; /* Increased margin */
+  color: #333;
+}
+
+h2 {
+  font-size: 28px;
+  margin-bottom: 20px;
+}
+
+.card-container {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 20px; /* Added margin to separate from title */
+}
+
+.card {
+  display: inline-block;
+  width: 300px;
+  height: 200px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin: 15px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  right: auto;
+  bottom: auto;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  max-width: 800px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  z-index: 1000;
+}
+
+.modal-content {
+  max-width: 800px;
+  margin: auto;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.modal-content pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.upload-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.upload-button:hover {
+  background-color: #0056b3;
+}
+
+.modal-image {
+  max-width: 100%;
+  height: auto;
+}
+
+.report-section {
+  margin-bottom: 20px;
+}
+
+.report-section h4 {
+  margin-bottom: 10px;
+  color: #007bff;
+}
+
+.report-section pre {
+  background-color: #f8f9fa;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.chat-modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  right: auto;
+  bottom: auto;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  max-width: 800px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.chat-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  z-index: 1000;
+}
+
+.chat-content {
+  max-width: 800px;
+  margin: auto;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.chat-messages {
+  max-height: 300px;
+  overflow-y: auto;
+  margin-bottom: 10px;
+}
+
+.chat-message {
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 5px;
+}
+
+.chat-message.user {
+  background-color: #007bff;
+  color: white;
+  align-self: flex-end;
+}
+
+.chat-message.bot {
+  background-color: #f1f1f1;
+  color: black;
+  align-self: flex-start;
+}
+
+.chat-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.chat-button:hover {
+  background-color: #0056b3;
+}
+
+.back-to-home {
+  display: block;
+  margin-top: 20px;
+  text-align: center;
+  color: #007bff;
+  text-decoration: none;
+}
+
+.back-to-home:hover {
+  text-decoration: underline;
+}

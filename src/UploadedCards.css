@@ -1,0 +1,22 @@
+.uploaded-cards-container {
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 800px;
+  margin: auto;
+}
+
+.uploaded-cards-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.uploaded-card-item {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.uploaded-card-item div {
+  margin-bottom: 5px;
+}

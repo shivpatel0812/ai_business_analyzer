@@ -1,0 +1,50 @@
+{
+  "name": "frontend",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@aws-amplify/auth": "4",
+    "@aws-amplify/core": "4",
+    "@aws-amplify/ui-react": "^6.1.12",
+    "@testing-library/jest-dom": "^5.17.0",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^13.5.0",
+    "aws-amplify": "4",
+    "axios": "^1.7.2",
+    "graphql": "15",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-dropzone": "^14.2.3",
+    "react-modal": "^3.16.1",
+    "react-refresh-webpack-plugin": "^0.1.0",
+    "react-router-dom": "6",
+    "react-scripts": "5.0.1",
+    "rxjs": "^7.8.1",
+    "source-map": "^0.6.1",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
