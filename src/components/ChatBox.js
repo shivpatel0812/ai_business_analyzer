@@ -21,8 +21,7 @@ const ChatBox = ({ isOpen, onRequestClose, cardId }) => {
         },
         {
           headers: {
-            Authorization:
-              "sk-proj-A1UW15gR3yuWdgbGEQTrT3BlbkFJxsq2C2IiFJ42UaFSKJG9",
+            Authorization: "OPEN_AI_KEY",
             "Content-Type": "application/json",
           },
         }
