@@ -7,6 +7,7 @@ import {
   Link,
   useLocation,
 } from "react-router-dom";
+import { Auth, Hub } from "aws-amplify";
 import Home from "./components/Home";
 import Register from "./components/Register";
 import ConfirmSignUp from "./components/ConfirmSignup";
@@ -25,6 +26,7 @@ function App() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [isImageModalOpen, setImageModalOpen] = useState(false);
   const [isChatBoxOpen, setChatBoxOpen] = useState(false);
+  const [user, setUser] = useState(null);
 
   const openUploadModal = () => {
     setUploadModalOpen(true);
@@ -57,22 +59,28 @@ function App() {
   };
 
   useEffect(() => {
-    const fetchUserImages = async () => {
+    const fetchUser = async () => {
       try {
-        const userId = "your_user_id"; // Retrieve user ID from Cognito
-        const response = await axios.get(
-          "https://j6fjlmw8uj.execute-api.us-east-2.amazonaws.com/dev",
-          {
-            params: { userId },
-          }
-        );
+        const user = await Auth.currentAuthenticatedUser();
+        setUser(user);
+        const userId = user.attributes.sub; // Cognito User ID
+        const response = await axios.get("https://your-api-endpoint/images", {
+          params: { userId },
+        });
         setImages(response.data);
       } catch (error) {
-        console.error("Error fetching user images:", error);
+        console.error("Error fetching user:", error);
       }
     };
 
-    fetchUserImages();
+    Hub.listen("auth", (data) => {
+      const { payload } = data;
+      if (payload.event === "signIn") {
+        fetchUser();
+      }
+    });
+
+    fetchUser();
   }, []);
 
   return (

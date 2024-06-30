@@ -6040,7 +6040,7 @@ available-typed-arrays@^1.0.7:
   dependencies:
     possible-typed-array-names "^1.0.0"
 
-aws-amplify@^6.3.2, aws-amplify@4:
+aws-amplify@^4.3.46, aws-amplify@^6.3.2:
   version "4.3.46"
   resolved "https://registry.npmjs.org/aws-amplify/-/aws-amplify-4.3.46.tgz"
   integrity sha512-LygkBq+mrV+hFf3DCrVcyYNxFsiYwL0HLN89X1Eg+s3f7df6T2xpjh4JuaDJFbmodEdAlZNfdtRGLMk6ApnPcA==

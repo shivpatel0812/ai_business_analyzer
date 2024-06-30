@@ -3,9 +3,10 @@ import { useDropzone } from "react-dropzone";
 import axios from "axios";
 import Modal from "react-modal";
 import "../styles.css";
-import "./UploadStyles.css"; // Import the new styles
+import "./UploadStyles.css";
 import AnalysisModal from "./AnalysisModal";
 import { v4 as uuidv4 } from "uuid";
+import { Auth } from "aws-amplify";
 
 const Upload = ({ isOpen, onRequestClose, addImage }) => {
   const [loading, setLoading] = useState(false);
@@ -13,13 +14,20 @@ const Upload = ({ isOpen, onRequestClose, addImage }) => {
   const [analysisModalOpen, setAnalysisModalOpen] = useState(false);
   const [uploadedImage, setUploadedImage] = useState({});
   const [recentImage, setRecentImage] = useState(null);
+  const [userId, setUserId] = useState(null);
+
+  useEffect(() => {
+    Auth.currentAuthenticatedUser()
+      .then((user) => setUserId(user.username))
+      .catch((err) => console.error("Error getting user: ", err));
+  }, []);
 
   const fetchAnalysis = async (data, imageUrl) => {
     setLoading(true);
     setError("");
     try {
       const response = await axios.post(
-        "https://8j01c6s5h4.execute-api.us-east-2.amazonaws.com/GPT-4VisionAnalysis",
+        "https://8j01c6s5h4.execute-api.us-east-2.amazonaws.com",
         JSON.stringify(data),
         {
           headers: {
@@ -33,14 +41,16 @@ const Upload = ({ isOpen, onRequestClose, addImage }) => {
       };
 
       // Save image metadata to the server
-      const userId = "your_user_id"; // Replace with the actual user ID
       const imageId = uuidv4();
-      await axios.post("https://your-api-endpoint/upload", {
-        userId,
-        imageId,
-        imageUrl,
-        analysis: response.data,
-      });
+      await axios.post(
+        "https://996eyi0mva.execute-api.us-east-2.amazonaws.com",
+        {
+          userId,
+          imageId,
+          imageUrl,
+          analysis: response.data,
+        }
+      );
 
       setUploadedImage(newImage);
       setRecentImage(newImage);
