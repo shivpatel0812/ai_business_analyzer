@@ -18,6 +18,9 @@ import Upload from "./components/Upload";
 import S3ImageDisplay from "./components/S3ImageDisplay";
 import AnalysisModal from "./components/AnalysisModal";
 import ChatBox from "./components/ChatBox";
+import ShareModal from "./components/ShareModal";
+import SharedCards from "./components/SharedCards";
+import Friends from "./components/Friends";
 import "./App.css";
 import { Auth } from "aws-amplify";
 
@@ -27,7 +30,10 @@ function App() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [isImageModalOpen, setImageModalOpen] = useState(false);
   const [isChatBoxOpen, setChatBoxOpen] = useState(false);
+  const [isShareModalOpen, setShareModalOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [friends, setFriends] = useState([]);
+  const [sharedCards, setSharedCards] = useState([]);
 
   const fetchUserId = async () => {
     try {
@@ -43,10 +49,8 @@ function App() {
     const checkAuthStatus = async () => {
       try {
         const user = await Auth.currentAuthenticatedUser();
-        console.log("Authenticated user:", user);
         setIsAuthenticated(true);
-      } catch (error) {
-        console.error("Error checking auth status:", error);
+      } catch {
         setIsAuthenticated(false);
       }
     };
@@ -83,6 +87,16 @@ function App() {
     setUploadModalOpen(false);
   };
 
+  const openShareModal = (image) => {
+    setSelectedImage(image);
+    setShareModalOpen(true);
+  };
+
+  const closeShareModal = () => {
+    setShareModalOpen(false);
+    setSelectedImage(null);
+  };
+
   const addImage = (newImage) => {
     setImages([newImage, ...images]);
   };
@@ -103,6 +117,21 @@ function App() {
 
   const closeChatBox = () => {
     setChatBoxOpen(false);
+  };
+
+  const shareWithFriend = async (friendId, image) => {
+    // Implement the sharing logic here, e.g., send to a server or update state
+    setSharedCards([...sharedCards, { ...image, sharedBy: friendId }]);
+  };
+
+  const sendFriendRequest = async (friendName) => {
+    // Implement the logic to send a friend request
+    console.log(`Sending friend request to ${friendName}`);
+  };
+
+  const acceptFriendRequest = async (requestId) => {
+    // Implement the logic to accept a friend request
+    console.log(`Accepting friend request with ID: ${requestId}`);
   };
 
   return (
@@ -149,6 +178,21 @@ function App() {
                       isOpen={isUploadModalOpen}
                       onRequestClose={closeUploadModal}
                       addImage={addImage}
+                      openShareModal={openShareModal}
+                    />
+                  }
+                />
+                <Route
+                  path="/shared-cards"
+                  element={<SharedCards sharedCards={sharedCards} />}
+                />
+                <Route
+                  path="/friends"
+                  element={
+                    <Friends
+                      friends={friends}
+                      onSendRequest={sendFriendRequest}
+                      onAcceptRequest={acceptFriendRequest}
                     />
                   }
                 />
@@ -162,6 +206,13 @@ function App() {
               isOpen={isImageModalOpen}
               onRequestClose={closeImageModal}
               image={selectedImage}
+            />
+            <ShareModal
+              isOpen={isShareModalOpen}
+              onRequestClose={closeShareModal}
+              image={selectedImage}
+              friends={friends}
+              onShareWithFriend={shareWithFriend}
             />
             <ChatBox
               isOpen={isChatBoxOpen}
@@ -185,6 +236,8 @@ function NavBar({ isAuthenticated }) {
           <Link to="/shared">Shared</Link>
           <Link to="/about">About</Link>
           <Link to="/uploaded-cards">Uploaded Cards</Link>
+          <Link to="/shared-cards">Shared Cards</Link>
+          <Link to="/friends">Friends</Link>
         </>
       )}
     </nav>
