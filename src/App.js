@@ -18,6 +18,7 @@ import S3ImageDisplay from "./components/S3ImageDisplay";
 import AnalysisModal from "./components/AnalysisModal";
 import ChatBox from "./components/ChatBox";
 import "./App.css";
+import { Auth } from "aws-amplify";
 
 function App() {
   const [isUploadModalOpen, setUploadModalOpen] = useState(false);
@@ -25,6 +26,51 @@ function App() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [isImageModalOpen, setImageModalOpen] = useState(false);
   const [isChatBoxOpen, setChatBoxOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  const fetchUserId = async () => {
+    try {
+      const user = await Auth.currentAuthenticatedUser();
+      return user.attributes.sub;
+    } catch (error) {
+      console.error("Error fetching user ID:", error);
+      throw new Error("User not authenticated");
+    }
+  };
+
+  useEffect(() => {
+    const checkAuthStatus = async () => {
+      try {
+        const user = await Auth.currentAuthenticatedUser();
+        setIsAuthenticated(true);
+      } catch {
+        setIsAuthenticated(false);
+      }
+    };
+
+    checkAuthStatus();
+  }, []);
+
+  useEffect(() => {
+    const fetchUserImages = async () => {
+      if (!isAuthenticated) return;
+
+      try {
+        const userId = await fetchUserId();
+        const response = await axios.get(
+          "https://996eyi0mva.execute-api.us-east-2.amazonaws.com/dev-stage",
+          {
+            params: { userId },
+          }
+        );
+        setImages(response.data);
+      } catch (error) {
+        console.error("Error fetching user images:", error);
+      }
+    };
+
+    fetchUserImages();
+  }, [isAuthenticated]);
 
   const openUploadModal = () => {
     setUploadModalOpen(true);
@@ -55,25 +101,6 @@ function App() {
   const closeChatBox = () => {
     setChatBoxOpen(false);
   };
-
-  useEffect(() => {
-    const fetchUserImages = async () => {
-      try {
-        const userId = "your_user_id"; // Retrieve user ID from Cognito
-        const response = await axios.get(
-          "https://j6fjlmw8uj.execute-api.us-east-2.amazonaws.com/dev",
-          {
-            params: { userId },
-          }
-        );
-        setImages(response.data);
-      } catch (error) {
-        console.error("Error fetching user images:", error);
-      }
-    };
-
-    fetchUserImages();
-  }, []);
 
   return (
     <Router>
