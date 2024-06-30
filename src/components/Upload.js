@@ -2,6 +2,7 @@ import React, { useState, useCallback, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import axios from "axios";
 import Modal from "react-modal";
+import { Auth } from "aws-amplify";
 import "../styles.css";
 import "./UploadStyles.css"; // Import the new styles
 import AnalysisModal from "./AnalysisModal";
@@ -14,10 +15,22 @@ const Upload = ({ isOpen, onRequestClose, addImage }) => {
   const [uploadedImage, setUploadedImage] = useState({});
   const [recentImage, setRecentImage] = useState(null);
 
+  const fetchUserId = async () => {
+    try {
+      const user = await Auth.currentAuthenticatedUser();
+      return user.attributes.sub;
+    } catch (error) {
+      console.error("Error fetching user ID:", error);
+      return null;
+    }
+  };
+
   const fetchAnalysis = async (data, imageUrl) => {
     setLoading(true);
     setError("");
     try {
+      const userId = await fetchUserId(); // Fetch the user ID from Cognito
+
       const response = await axios.post(
         "https://8j01c6s5h4.execute-api.us-east-2.amazonaws.com/GPT-4VisionAnalysis",
         JSON.stringify(data),
@@ -27,20 +40,23 @@ const Upload = ({ isOpen, onRequestClose, addImage }) => {
           },
         }
       );
+
       const newImage = {
         url: imageUrl,
         analysis: response.data,
       };
 
       // Save image metadata to the server
-      const userId = "your_user_id"; // Replace with the actual user ID
       const imageId = uuidv4();
-      await axios.post("https://your-api-endpoint/upload", {
-        userId,
-        imageId,
-        imageUrl,
-        analysis: response.data,
-      });
+      await axios.post(
+        "https://996eyi0mva.execute-api.us-east-2.amazonaws.com/dev-stage",
+        {
+          userId,
+          imageId,
+          imageUrl,
+          analysis: response.data,
+        }
+      );
 
       setUploadedImage(newImage);
       setRecentImage(newImage);
