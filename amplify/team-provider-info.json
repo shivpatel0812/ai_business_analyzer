@@ -16,5 +16,23 @@
         "aibusinessanalyzera5a4aea39": {}
       }
     }
+  },
+  "test": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-aibusinessanalyzera-test-b2412-authRole",
+      "UnauthRoleArn": "arn:aws:iam::273641666957:role/amplify-aibusinessanalyzera-test-b2412-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::273641666957:role/amplify-aibusinessanalyzera-test-b2412-authRole",
+      "Region": "us-east-2",
+      "DeploymentBucketName": "amplify-aibusinessanalyzera-test-b2412-deployment",
+      "UnauthRoleName": "amplify-aibusinessanalyzera-test-b2412-unauthRole",
+      "StackName": "amplify-aibusinessanalyzera-test-b2412",
+      "StackId": "arn:aws:cloudformation:us-east-2:273641666957:stack/amplify-aibusinessanalyzera-test-b2412/e37507b0-3686-11ef-add3-06475977c107",
+      "AmplifyAppId": "d38usaxovvgc8j"
+    },
+    "categories": {
+      "auth": {
+        "aibusinessanalyzera5a4aea39": {}
+      }
+    }
   }
 }
