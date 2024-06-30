@@ -6,6 +6,7 @@ import {
   Route,
   Link,
   useLocation,
+  useNavigate,
 } from "react-router-dom";
 import Home from "./components/Home";
 import Register from "./components/Register";
@@ -42,8 +43,10 @@ function App() {
     const checkAuthStatus = async () => {
       try {
         const user = await Auth.currentAuthenticatedUser();
+        console.log("Authenticated user:", user);
         setIsAuthenticated(true);
-      } catch {
+      } catch (error) {
+        console.error("Error checking auth status:", error);
         setIsAuthenticated(false);
       }
     };
@@ -107,40 +110,50 @@ function App() {
       <div>
         <header>
           <h1>AI Business Card Analyzer</h1>
-          <NavBar />
+          <NavBar isAuthenticated={isAuthenticated} />
         </header>
         <main className="container">
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
+            <Route
+              path="/login"
+              element={<Login setIsAuthenticated={setIsAuthenticated} />}
+            />
             <Route path="/register" element={<Register />} />
             <Route path="/confirm-sign-up" element={<ConfirmSignUp />} />
-            <Route
-              path="/shared"
-              element={
-                <Shared images={images} setSelectedImage={setSelectedImage} />
-              }
-            />
-            <Route path="/about" element={<About />} />
-            <Route
-              path="/uploaded-cards"
-              element={
-                <S3ImageDisplay
-                  images={images}
-                  openImageModal={openImageModal}
+            {isAuthenticated && (
+              <>
+                <Route
+                  path="/shared"
+                  element={
+                    <Shared
+                      images={images}
+                      setSelectedImage={setSelectedImage}
+                    />
+                  }
                 />
-              }
-            />
-            <Route
-              path="/upload"
-              element={
-                <Upload
-                  isOpen={isUploadModalOpen}
-                  onRequestClose={closeUploadModal}
-                  addImage={addImage}
+                <Route path="/about" element={<About />} />
+                <Route
+                  path="/uploaded-cards"
+                  element={
+                    <S3ImageDisplay
+                      images={images}
+                      openImageModal={openImageModal}
+                    />
+                  }
                 />
-              }
-            />
+                <Route
+                  path="/upload"
+                  element={
+                    <Upload
+                      isOpen={isUploadModalOpen}
+                      onRequestClose={closeUploadModal}
+                      addImage={addImage}
+                    />
+                  }
+                />
+              </>
+            )}
           </Routes>
         </main>
         {selectedImage && (
@@ -162,17 +175,18 @@ function App() {
   );
 }
 
-function NavBar() {
-  const location = useLocation();
-  if (location.pathname === "/") return null;
-
+function NavBar({ isAuthenticated }) {
   return (
     <nav className="navbar">
       <Link to="/">Home</Link>
-      <Link to="/upload">Upload</Link>
-      <Link to="/shared">Shared</Link>
-      <Link to="/about">About</Link>
-      <Link to="/uploaded-cards">Uploaded Cards</Link>
+      {isAuthenticated && (
+        <>
+          <Link to="/upload">Upload</Link>
+          <Link to="/shared">Shared</Link>
+          <Link to="/about">About</Link>
+          <Link to="/uploaded-cards">Uploaded Cards</Link>
+        </>
+      )}
     </nav>
   );
 }
