@@ -3,7 +3,7 @@ import { Auth } from "aws-amplify";
 import { useNavigate } from "react-router-dom";
 import "../Login.css";
 
-const Login = () => {
+const Login = ({ setIsAuthenticated }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -13,11 +13,11 @@ const Login = () => {
     event.preventDefault();
     try {
       await Auth.signIn(username, password);
-      console.log("Login successful"); // Debug statement
-      // Redirect to the uploaded cards page
+      console.log("Login successful");
+      setIsAuthenticated(true);
       navigate("/uploaded-cards");
     } catch (err) {
-      console.error("Authentication error:", err); // Debug statement
+      console.error("Authentication error:", err);
       setError("Authentication Error");
     }
   };
