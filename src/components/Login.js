@@ -19,10 +19,12 @@ const Login = ({ setIsAuthenticated }) => {
         user.challengeName === "SMS_MFA" ||
         user.challengeName === "SOFTWARE_TOKEN_MFA"
       ) {
+        console.log("MFA required, navigating to confirm sign up page");
         navigate("/confirm-sign-up", { state: { username } });
       } else {
-        console.log("Setting isAuthenticated to true");
-        setIsAuthenticated();
+        console.log("No MFA required, setting isAuthenticated to true");
+        setIsAuthenticated(true);
+        console.log("Navigating to upload page");
         navigate("/upload"); // Redirect to upload page after successful login
       }
     } catch (err) {

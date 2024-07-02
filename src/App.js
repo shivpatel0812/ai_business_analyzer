@@ -173,7 +173,10 @@ function App() {
             element={<Login setIsAuthenticated={handleLoginSuccess} />}
           />
           <Route path="/register" element={<Register />} />
-          <Route path="/confirm-sign-up" element={<ConfirmSignUp />} />
+          <Route
+            path="/confirm-sign-up"
+            element={<ConfirmSignUp setIsAuthenticated={handleLoginSuccess} />}
+          />
           {isAuthenticated && (
             <>
               <Route
