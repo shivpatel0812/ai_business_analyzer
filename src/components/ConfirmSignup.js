@@ -21,8 +21,8 @@ const ConfirmSignUp = ({ setIsAuthenticated }) => {
         user.challengeName === "SMS_MFA" ||
         user.challengeName === "SOFTWARE_TOKEN_MFA"
       ) {
-        console.log("Additional MFA required");
-        // Handle additional MFA if necessary
+        console.log("MFA required");
+        navigate("/login", { state: { username } });
       } else {
         console.log("Sign in complete, setting isAuthenticated to true");
         setIsAuthenticated(true);

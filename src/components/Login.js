@@ -15,18 +15,11 @@ const Login = ({ setIsAuthenticated }) => {
     try {
       const user = await Auth.signIn(username, password);
       console.log("Login successful:", user);
-      if (
-        user.challengeName === "SMS_MFA" ||
-        user.challengeName === "SOFTWARE_TOKEN_MFA"
-      ) {
-        console.log("MFA required, navigating to confirm sign up page");
-        navigate("/confirm-sign-up", { state: { username } });
-      } else {
-        console.log("No MFA required, setting isAuthenticated to true");
-        setIsAuthenticated(true);
-        console.log("Navigating to upload page");
-        navigate("/upload"); // Redirect to upload page after successful login
-      }
+      // Assuming no MFA required
+      console.log("Setting isAuthenticated to true");
+      setIsAuthenticated(true);
+      console.log("Navigating to upload page");
+      navigate("/upload"); // Redirect to upload page after successful login
     } catch (err) {
       console.error("Authentication error:", err);
       setError("Authentication Error");
