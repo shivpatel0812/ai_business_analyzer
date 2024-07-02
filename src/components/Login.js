@@ -11,11 +11,20 @@ const Login = ({ setIsAuthenticated }) => {
 
   const handleLogin = async (event) => {
     event.preventDefault();
+    console.log("Attempting to log in...");
     try {
-      await Auth.signIn(username, password);
-      console.log("Login successful");
-      setIsAuthenticated(true);
-      navigate("/uploaded-cards");
+      const user = await Auth.signIn(username, password);
+      console.log("Login successful:", user);
+      if (
+        user.challengeName === "SMS_MFA" ||
+        user.challengeName === "SOFTWARE_TOKEN_MFA"
+      ) {
+        navigate("/confirm-sign-up", { state: { username } });
+      } else {
+        console.log("Setting isAuthenticated to true");
+        setIsAuthenticated();
+        navigate("/upload"); // Redirect to upload page after successful login
+      }
     } catch (err) {
       console.error("Authentication error:", err);
       setError("Authentication Error");

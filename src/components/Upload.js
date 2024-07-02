@@ -4,7 +4,7 @@ import axios from "axios";
 import Modal from "react-modal";
 import { Auth } from "aws-amplify";
 import "../styles.css";
-import "./UploadStyles.css"; // Import the new styles
+import "./UploadStyles.css";
 import AnalysisModal from "./AnalysisModal";
 import { v4 as uuidv4 } from "uuid";
 
@@ -14,14 +14,29 @@ const Upload = ({ isOpen, onRequestClose, addImage }) => {
   const [analysisModalOpen, setAnalysisModalOpen] = useState(false);
   const [uploadedImage, setUploadedImage] = useState({});
   const [recentImage, setRecentImage] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const checkAuthStatus = async () => {
+      try {
+        const user = await Auth.currentAuthenticatedUser();
+        setIsAuthenticated(true);
+      } catch {
+        setIsAuthenticated(false);
+      }
+    };
+
+    checkAuthStatus();
+  }, []);
 
   const fetchUserId = async () => {
     try {
       const user = await Auth.currentAuthenticatedUser();
+      console.log("User authenticated:", user);
       return user.attributes.sub;
     } catch (error) {
-      console.error("Error fetching user ID:", error);
-      return null;
+      console.error("Error fetching user ID:", error.message);
+      throw new Error("User not authenticated");
     }
   };
 
@@ -29,7 +44,7 @@ const Upload = ({ isOpen, onRequestClose, addImage }) => {
     setLoading(true);
     setError("");
     try {
-      const userId = await fetchUserId(); // Fetch the user ID from Cognito
+      const userId = await fetchUserId();
 
       const response = await axios.post(
         "https://8j01c6s5h4.execute-api.us-east-2.amazonaws.com/GPT-4VisionAnalysis",
@@ -46,7 +61,6 @@ const Upload = ({ isOpen, onRequestClose, addImage }) => {
         analysis: response.data,
       };
 
-      // Save image metadata to the server
       const imageId = uuidv4();
       await axios.post(
         "https://996eyi0mva.execute-api.us-east-2.amazonaws.com/dev-stage",
@@ -73,17 +87,25 @@ const Upload = ({ isOpen, onRequestClose, addImage }) => {
     }
   };
 
-  const onDrop = useCallback((acceptedFiles) => {
-    const file = acceptedFiles[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64Image = reader.result.split(",")[1];
-        fetchAnalysis({ image_data: base64Image }, reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  }, []);
+  const onDrop = useCallback(
+    (acceptedFiles) => {
+      if (!isAuthenticated) {
+        setError("You must be authenticated to upload files.");
+        return;
+      }
+
+      const file = acceptedFiles[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const base64Image = reader.result.split(",")[1];
+          fetchAnalysis({ image_data: base64Image }, reader.result);
+        };
+        reader.readAsDataURL(file);
+      }
+    },
+    [isAuthenticated]
+  );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 

@@ -1,19 +1,15 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import Modal from "react-modal"; // Import Modal from react-modal
+import { BrowserRouter as Router } from "react-router-dom";
 import Amplify from "aws-amplify";
 import awsconfig from "./aws-exports";
 import App from "./App";
 
-// Configure Amplify
 Amplify.configure(awsconfig);
 
-// Set the root element for react-modal
-Modal.setAppElement("#root");
-
 ReactDOM.render(
-  <React.StrictMode>
+  <Router>
     <App />
-  </React.StrictMode>,
+  </Router>,
   document.getElementById("root")
 );

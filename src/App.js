@@ -1,13 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Link,
-  useLocation,
-  useNavigate,
-} from "react-router-dom";
+import { Routes, Route, Link, useNavigate } from "react-router-dom";
 import Home from "./components/Home";
 import Register from "./components/Register";
 import ConfirmSignUp from "./components/ConfirmSignup";
@@ -32,26 +25,22 @@ function App() {
   const [isChatBoxOpen, setChatBoxOpen] = useState(false);
   const [isShareModalOpen, setShareModalOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthChecked, setIsAuthChecked] = useState(false);
   const [friends, setFriends] = useState([]);
   const [sharedCards, setSharedCards] = useState([]);
-
-  const fetchUserId = async () => {
-    try {
-      const user = await Auth.currentAuthenticatedUser();
-      return user.attributes.sub;
-    } catch (error) {
-      console.error("Error fetching user ID:", error);
-      throw new Error("User not authenticated");
-    }
-  };
+  const navigate = useNavigate();
 
   useEffect(() => {
     const checkAuthStatus = async () => {
       try {
         const user = await Auth.currentAuthenticatedUser();
+        console.log("Authenticated user in checkAuthStatus:", user);
         setIsAuthenticated(true);
-      } catch {
+      } catch (error) {
+        console.log("User not authenticated in checkAuthStatus:", error);
         setIsAuthenticated(false);
+      } finally {
+        setIsAuthChecked(true);
       }
     };
 
@@ -59,24 +48,59 @@ function App() {
   }, []);
 
   useEffect(() => {
-    const fetchUserImages = async () => {
-      if (!isAuthenticated) return;
+    if (
+      isAuthChecked &&
+      !isAuthenticated &&
+      window.location.pathname !== "/login"
+    ) {
+      navigate("/login");
+    }
+  }, [isAuthChecked, isAuthenticated, navigate]);
 
-      try {
-        const userId = await fetchUserId();
-        const response = await axios.get(
-          "https://996eyi0mva.execute-api.us-east-2.amazonaws.com/dev-stage",
-          {
-            params: { userId },
-          }
-        );
-        setImages(response.data);
-      } catch (error) {
-        console.error("Error fetching user images:", error);
+  const handleLoginSuccess = () => {
+    console.log("Login success handler called");
+    setIsAuthenticated(true);
+    setIsAuthChecked(true);
+    navigate("/upload"); // Redirect to upload page after successful login
+  };
+
+  const fetchUserId = async () => {
+    try {
+      const user = await Auth.currentAuthenticatedUser();
+      console.log("User authenticated in fetchUserId:", user);
+      return user.attributes.sub;
+    } catch (error) {
+      console.error("Error fetching user ID:", error.message);
+      throw new Error("User not authenticated");
+    }
+  };
+
+  const fetchUserImages = async (userId) => {
+    try {
+      const response = await axios.get(
+        "https://996eyi0mva.execute-api.us-east-2.amazonaws.com/dev-stage",
+        { params: { userId } }
+      );
+      console.log("Images fetched successfully:", response.data);
+      setImages(response.data);
+    } catch (error) {
+      console.error("Error fetching user images:", error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchImages = async () => {
+      if (isAuthenticated) {
+        try {
+          const userId = await fetchUserId();
+          await fetchUserImages(userId);
+        } catch (error) {
+          console.error(error);
+        }
       }
     };
 
-    fetchUserImages();
+    fetchImages();
   }, [isAuthenticated]);
 
   const openUploadModal = () => {
@@ -120,109 +144,105 @@ function App() {
   };
 
   const shareWithFriend = async (friendId, image) => {
-    // Implement the sharing logic here, e.g., send to a server or update state
     setSharedCards([...sharedCards, { ...image, sharedBy: friendId }]);
   };
 
   const sendFriendRequest = async (friendName) => {
-    // Implement the logic to send a friend request
     console.log(`Sending friend request to ${friendName}`);
   };
 
   const acceptFriendRequest = async (requestId) => {
-    // Implement the logic to accept a friend request
     console.log(`Accepting friend request with ID: ${requestId}`);
   };
 
+  if (!isAuthChecked) {
+    return <div>Loading...</div>;
+  }
+
   return (
-    <Router>
-      <div>
-        <header>
-          <h1>AI Business Card Analyzer</h1>
-          <NavBar isAuthenticated={isAuthenticated} />
-        </header>
-        <main className="container">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route
-              path="/login"
-              element={<Login setIsAuthenticated={setIsAuthenticated} />}
-            />
-            <Route path="/register" element={<Register />} />
-            <Route path="/confirm-sign-up" element={<ConfirmSignUp />} />
-            {isAuthenticated && (
-              <>
-                <Route
-                  path="/shared"
-                  element={
-                    <Shared
-                      images={images}
-                      setSelectedImage={setSelectedImage}
-                    />
-                  }
-                />
-                <Route path="/about" element={<About />} />
-                <Route
-                  path="/uploaded-cards"
-                  element={
-                    <S3ImageDisplay
-                      images={images}
-                      openImageModal={openImageModal}
-                    />
-                  }
-                />
-                <Route
-                  path="/upload"
-                  element={
-                    <Upload
-                      isOpen={isUploadModalOpen}
-                      onRequestClose={closeUploadModal}
-                      addImage={addImage}
-                      openShareModal={openShareModal}
-                    />
-                  }
-                />
-                <Route
-                  path="/shared-cards"
-                  element={<SharedCards sharedCards={sharedCards} />}
-                />
-                <Route
-                  path="/friends"
-                  element={
-                    <Friends
-                      friends={friends}
-                      onSendRequest={sendFriendRequest}
-                      onAcceptRequest={acceptFriendRequest}
-                    />
-                  }
-                />
-              </>
-            )}
-          </Routes>
-        </main>
-        {selectedImage && (
-          <>
-            <AnalysisModal
-              isOpen={isImageModalOpen}
-              onRequestClose={closeImageModal}
-              image={selectedImage}
-            />
-            <ShareModal
-              isOpen={isShareModalOpen}
-              onRequestClose={closeShareModal}
-              image={selectedImage}
-              friends={friends}
-              onShareWithFriend={shareWithFriend}
-            />
-            <ChatBox
-              isOpen={isChatBoxOpen}
-              onRequestClose={closeChatBox}
-              cardId={selectedImage.id}
-            />
-          </>
-        )}
-      </div>
-    </Router>
+    <div>
+      <header>
+        <h1>AI Business Card Analyzer</h1>
+        <NavBar isAuthenticated={isAuthenticated} />
+      </header>
+      <main className="container">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route
+            path="/login"
+            element={<Login setIsAuthenticated={handleLoginSuccess} />}
+          />
+          <Route path="/register" element={<Register />} />
+          <Route path="/confirm-sign-up" element={<ConfirmSignUp />} />
+          {isAuthenticated && (
+            <>
+              <Route
+                path="/shared"
+                element={
+                  <Shared images={images} setSelectedImage={setSelectedImage} />
+                }
+              />
+              <Route path="/about" element={<About />} />
+              <Route
+                path="/uploaded-cards"
+                element={
+                  <S3ImageDisplay
+                    images={images}
+                    openImageModal={openImageModal}
+                  />
+                }
+              />
+              <Route
+                path="/upload"
+                element={
+                  <Upload
+                    isOpen={isUploadModalOpen}
+                    onRequestClose={closeUploadModal}
+                    addImage={addImage}
+                    openShareModal={openShareModal}
+                  />
+                }
+              />
+              <Route
+                path="/shared-cards"
+                element={<SharedCards sharedCards={sharedCards} />}
+              />
+              <Route
+                path="/friends"
+                element={
+                  <Friends
+                    friends={friends}
+                    onSendRequest={sendFriendRequest}
+                    onAcceptRequest={acceptFriendRequest}
+                  />
+                }
+              />
+            </>
+          )}
+        </Routes>
+      </main>
+      {selectedImage && (
+        <>
+          <AnalysisModal
+            isOpen={isImageModalOpen}
+            onRequestClose={closeImageModal}
+            image={selectedImage}
+          />
+          <ShareModal
+            isOpen={isShareModalOpen}
+            onRequestClose={closeShareModal}
+            image={selectedImage}
+            friends={friends}
+            onShareWithFriend={shareWithFriend}
+          />
+          <ChatBox
+            isOpen={isChatBoxOpen}
+            onRequestClose={closeChatBox}
+            cardId={selectedImage.id}
+          />
+        </>
+      )}
+    </div>
   );
 }
 
