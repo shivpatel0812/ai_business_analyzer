@@ -78,7 +78,7 @@ function App() {
   const fetchUserImages = async (userId) => {
     try {
       const response = await axios.get(
-        "https://996eyi0mva.execute-api.us-east-2.amazonaws.com/dev-stage",
+        "https://996eyi0mva.execute-api.us-east-2.amazonaws.com/dev-stage/getUserImages",
         { params: { userId } }
       );
       console.log("Images fetched successfully:", response.data);

@@ -43,7 +43,7 @@ const Upload = ({ isOpen, onRequestClose, addImage }) => {
   const saveImageMetadata = async (userId, imageId, imageUrl, analysis) => {
     try {
       await axios.post(
-        "https://996eyi0mva.execute-api.us-east-2.amazonaws.com/dev-stage",
+        "https://996eyi0mva.execute-api.us-east-2.amazonaws.com/dev-stage/saveImageMetadata",
         {
           userId,
           imageId,
