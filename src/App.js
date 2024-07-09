@@ -155,6 +155,16 @@ function App() {
     console.log(`Accepting friend request with ID: ${requestId}`);
   };
 
+  const handleLogout = async () => {
+    try {
+      await Auth.signOut();
+      setIsAuthenticated(false);
+      navigate("/login"); // Redirect to login page after logging out
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
+  };
+
   if (!isAuthChecked) {
     return <div>Loading...</div>;
   }
@@ -163,7 +173,7 @@ function App() {
     <div>
       <header>
         <h1>AI Business Card Analyzer</h1>
-        <NavBar isAuthenticated={isAuthenticated} />
+        <NavBar isAuthenticated={isAuthenticated} onLogout={handleLogout} />
       </header>
       <main className="container">
         <Routes>
@@ -249,7 +259,7 @@ function App() {
   );
 }
 
-function NavBar({ isAuthenticated }) {
+function NavBar({ isAuthenticated, onLogout }) {
   return (
     <nav className="navbar">
       <Link to="/">Home</Link>
@@ -261,6 +271,7 @@ function NavBar({ isAuthenticated }) {
           <Link to="/uploaded-cards">Uploaded Cards</Link>
           <Link to="/shared-cards">Shared Cards</Link>
           <Link to="/friends">Friends</Link>
+          <button onClick={onLogout}>Logout</button>
         </>
       )}
     </nav>

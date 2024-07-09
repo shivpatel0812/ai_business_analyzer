@@ -9,15 +9,19 @@ Amplify.configure(awsconfig);
 async function signIn(username, password) {
   try {
     const user = await Auth.signIn(username, password);
-    // console.log("Authenticated user:", user);
-    // console.log("User is authenticated");
+    console.log("Authenticated user:", user);
 
     // Fetch user ID and test the API
     const userId = await fetchUserId();
     await testApi(userId);
+
+    // Upload an image and save its metadata
+    const imageUrl = "https://images.app.goo.gl/euSevnswZDdAEDHx6"; // Replace with actual image URL
+    const analysis = { key: "value" }; // Replace with actual analysis data
+    const imageId = "unique-image-id"; // Replace with actual image ID
+    await saveImageMetadata(userId, imageId, imageUrl, analysis);
   } catch (error) {
-    // console.log("Failed to authenticate user:", error);
-    // console.log("User is not authenticated");
+    console.error("Failed to authenticate user:", error);
   }
 }
 
@@ -43,6 +47,34 @@ const testApi = async (userId) => {
     console.log("API response:", response.data);
   } catch (error) {
     console.error("Error testing API endpoint:", error);
+  }
+};
+
+const saveImageMetadata = async (userId, imageId, imageUrl, analysis) => {
+  try {
+    const payload = {
+      userId,
+      imageId,
+      imageUrl,
+      analysis,
+    };
+    console.log("Saving image metadata with payload:", payload);
+
+    const response = await axios.post(
+      "https://996eyi0mva.execute-api.us-east-2.amazonaws.com/dev-stage/saveImageMetadata",
+      payload,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    console.log("Image metadata saved successfully", response.data);
+  } catch (err) {
+    console.error(
+      "Error saving image metadata:",
+      err.response ? err.response.data : err.message
+    );
   }
 };
 

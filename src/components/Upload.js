@@ -8,7 +8,7 @@ import "./UploadStyles.css";
 import AnalysisModal from "./AnalysisModal";
 import { v4 as uuidv4 } from "uuid";
 
-const Upload = ({ isOpen, onRequestClose, addImage }) => {
+const Upload = ({ isOpen, onRequestClose, addImage, fetchUserImages }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [analysisModalOpen, setAnalysisModalOpen] = useState(false);
@@ -42,18 +42,26 @@ const Upload = ({ isOpen, onRequestClose, addImage }) => {
 
   const saveImageMetadata = async (userId, imageId, imageUrl, analysis) => {
     try {
+      const payload = {
+        userId,
+        imageId,
+        imageUrl,
+        analysis,
+      };
+      console.log("Saving image metadata with payload:", payload);
       await axios.post(
         "https://996eyi0mva.execute-api.us-east-2.amazonaws.com/dev-stage/saveImageMetadata",
+        payload,
         {
-          userId,
-          imageId,
-          imageUrl,
-          analysis,
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
       );
       console.log("Image metadata saved successfully");
     } catch (err) {
       console.error("Error saving image metadata:", err.message);
+      throw err; // Re-throw the error after logging
     }
   };
 
@@ -66,7 +74,7 @@ const Upload = ({ isOpen, onRequestClose, addImage }) => {
 
       const response = await axios.post(
         "https://8j01c6s5h4.execute-api.us-east-2.amazonaws.com/GPT-4VisionAnalysis",
-        JSON.stringify(data),
+        JSON.stringify({ ...data, userId }), // Include userId in the payload
         {
           headers: {
             "Content-Type": "application/json",
@@ -87,7 +95,8 @@ const Upload = ({ isOpen, onRequestClose, addImage }) => {
       setAnalysisModalOpen(true);
 
       // Save image metadata after updating the state
-      saveImageMetadata(userId, imageId, imageUrl, response.data);
+      await saveImageMetadata(userId, imageId, imageUrl, response.data);
+      fetchUserImages(userId); // Fetch updated images
     } catch (err) {
       console.error(
         "Error fetching analysis:",
