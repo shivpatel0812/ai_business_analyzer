@@ -8,7 +8,7 @@ import "./UploadStyles.css";
 import AnalysisModal from "./AnalysisModal";
 import { v4 as uuidv4 } from "uuid";
 
-const Upload = ({ isOpen, onRequestClose, addImage }) => {
+const Upload = ({ isOpen, onRequestClose, addImage, fetchUserImages }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [analysisModalOpen, setAnalysisModalOpen] = useState(false);
@@ -40,21 +40,48 @@ const Upload = ({ isOpen, onRequestClose, addImage }) => {
     }
   };
 
-  const fetchAnalysis = async (data, imageUrl) => {
-    setLoading(true);
-    setError("");
+  const saveImageMetadata = async (userId, imageId, imageUrl, analysis) => {
     try {
-      const userId = await fetchUserId();
-
-      const response = await axios.post(
-        "https://8j01c6s5h4.execute-api.us-east-2.amazonaws.com/GPT-4VisionAnalysis",
-        JSON.stringify(data),
+      const payload = {
+        userId,
+        imageId,
+        imageUrl,
+        analysis,
+      };
+      console.log("Saving image metadata with payload:", payload);
+      await axios.post(
+        "https://996eyi0mva.execute-api.us-east-2.amazonaws.com/dev-stage/saveImageMetadata",
+        payload,
         {
           headers: {
             "Content-Type": "application/json",
           },
         }
       );
+      console.log("Image metadata saved successfully");
+    } catch (err) {
+      console.error("Error saving image metadata:", err.message);
+      throw err; // Re-throw the error after logging
+    }
+  };
+
+  const fetchAnalysis = async (data, imageUrl) => {
+    setLoading(true);
+    setError("");
+    try {
+      const userId = await fetchUserId();
+      console.log("User ID fetched:", userId);
+
+      const response = await axios.post(
+        "https://8j01c6s5h4.execute-api.us-east-2.amazonaws.com/GPT-4VisionAnalysis",
+        JSON.stringify({ ...data, userId }), // Include userId in the payload
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log("Analysis response received:", response.data);
 
       const newImage = {
         url: imageUrl,
@@ -62,20 +89,14 @@ const Upload = ({ isOpen, onRequestClose, addImage }) => {
       };
 
       const imageId = uuidv4();
-      await axios.post(
-        "https://996eyi0mva.execute-api.us-east-2.amazonaws.com/dev-stage",
-        {
-          userId,
-          imageId,
-          imageUrl,
-          analysis: response.data,
-        }
-      );
-
       setUploadedImage(newImage);
       setRecentImage(newImage);
       addImage(newImage);
       setAnalysisModalOpen(true);
+
+      // Save image metadata after updating the state
+      await saveImageMetadata(userId, imageId, imageUrl, response.data);
+      fetchUserImages(userId); // Fetch updated images
     } catch (err) {
       console.error(
         "Error fetching analysis:",
