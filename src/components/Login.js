@@ -15,11 +15,11 @@ const Login = ({ setIsAuthenticated }) => {
     try {
       const user = await Auth.signIn(username, password);
       console.log("Login successful:", user);
-      // Assuming no MFA required
+
       console.log("Setting isAuthenticated to true");
       setIsAuthenticated(true);
       console.log("Navigating to upload page");
-      navigate("/upload"); // Redirect to upload page after successful login
+      navigate("/upload");
     } catch (err) {
       console.error("Authentication error:", err);
       setError("Authentication Error");

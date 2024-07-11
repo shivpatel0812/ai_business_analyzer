@@ -213,6 +213,7 @@ function App() {
                     onRequestClose={closeUploadModal}
                     addImage={addImage}
                     openShareModal={openShareModal}
+                    fetchUserImages={fetchUserImages}
                   />
                 }
               />

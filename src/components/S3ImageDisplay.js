@@ -4,7 +4,6 @@ import "../styles.css";
 const S3ImageDisplay = ({ images, openImageModal }) => {
   console.log("S3ImageDisplay component rendered with images:", images);
 
-  // Ensure images is an array
   const validImages = Array.isArray(images) ? images : [];
 
   return (
@@ -17,9 +16,16 @@ const S3ImageDisplay = ({ images, openImageModal }) => {
               className="card"
               onClick={() => openImageModal(image)}
             >
-              {image.url && (
-                <img src={image.url} alt="Uploaded" className="card-image" />
+              {image.imageUrl && (
+                <img
+                  src={image.imageUrl.S}
+                  alt="Uploaded"
+                  className="card-image"
+                />
               )}
+              <div className="analysis">
+                {image.analysis && JSON.stringify(image.analysis.M)}
+              </div>
             </div>
           ))
         ) : (
