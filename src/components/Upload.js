@@ -41,6 +41,16 @@ const Upload = ({ isOpen, onRequestClose, addImage, fetchUserImages }) => {
   };
 
   const saveImageMetadata = async (userId, imageId, imageUrl, analysis) => {
+    if (!userId || !imageId || !imageUrl || !analysis) {
+      console.error("Missing required parameters:", {
+        userId,
+        imageId,
+        imageUrl,
+        analysis,
+      });
+      return;
+    }
+
     try {
       const payload = {
         userId,
@@ -48,8 +58,11 @@ const Upload = ({ isOpen, onRequestClose, addImage, fetchUserImages }) => {
         imageUrl,
         analysis,
       };
-      console.log("Saving image metadata with payload:", payload);
-      await axios.post(
+      console.log(
+        "Saving image metadata with payload:",
+        JSON.stringify(payload, null, 2)
+      );
+      const response = await axios.post(
         "https://996eyi0mva.execute-api.us-east-2.amazonaws.com/dev-stage/saveImageMetadata",
         payload,
         {
@@ -58,10 +71,14 @@ const Upload = ({ isOpen, onRequestClose, addImage, fetchUserImages }) => {
           },
         }
       );
-      console.log("Image metadata saved successfully");
+      console.log("Image metadata saved successfully", response.data);
     } catch (err) {
-      console.error("Error saving image metadata:", err.message);
-      throw err; // Re-throw the error after logging
+      console.error(
+        "Error saving image metadata:",
+        err.message,
+        err.response ? err.response.data : ""
+      );
+      throw err;
     }
   };
 
@@ -74,7 +91,7 @@ const Upload = ({ isOpen, onRequestClose, addImage, fetchUserImages }) => {
 
       const response = await axios.post(
         "https://8j01c6s5h4.execute-api.us-east-2.amazonaws.com/GPT-4VisionAnalysis",
-        JSON.stringify({ ...data, userId }), // Include userId in the payload
+        JSON.stringify({ ...data, userId }),
         {
           headers: {
             "Content-Type": "application/json",
@@ -94,9 +111,8 @@ const Upload = ({ isOpen, onRequestClose, addImage, fetchUserImages }) => {
       addImage(newImage);
       setAnalysisModalOpen(true);
 
-      // Save image metadata after updating the state
       await saveImageMetadata(userId, imageId, imageUrl, response.data);
-      fetchUserImages(userId); // Fetch updated images
+      await fetchUserImages(userId);
     } catch (err) {
       console.error(
         "Error fetching analysis:",

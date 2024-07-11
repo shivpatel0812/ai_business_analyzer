@@ -6,7 +6,7 @@ const Register = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState(""); // Add state for phone number
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -14,7 +14,7 @@ const Register = () => {
     event.preventDefault();
 
     try {
-      const formattedPhoneNumber = `+1${phoneNumber.replace(/[^0-9]/g, "")}`; // Format phone number
+      const formattedPhoneNumber = `+1${phoneNumber.replace(/[^0-9]/g, "")}`;
 
       await Auth.signUp({
         username,
