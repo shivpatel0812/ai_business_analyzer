@@ -2,11 +2,12 @@ import React, { useState, useCallback, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import axios from "axios";
 import Modal from "react-modal";
-import { Auth } from "aws-amplify";
+import { Auth, Storage } from "aws-amplify";
 import "../styles.css";
 import "./UploadStyles.css";
 import AnalysisModal from "./AnalysisModal";
 import { v4 as uuidv4 } from "uuid";
+import awsExports from "../aws-exports";
 
 const Upload = ({ isOpen, onRequestClose, addImage, fetchUserImages }) => {
   const [loading, setLoading] = useState(false);
@@ -58,11 +59,8 @@ const Upload = ({ isOpen, onRequestClose, addImage, fetchUserImages }) => {
         imageUrl,
         analysis,
       };
-      console.log(
-        "Saving image metadata with payload:",
-        JSON.stringify(payload, null, 2)
-      );
-      const response = await axios.post(
+      console.log("Saving image metadata with payload:", payload);
+      await axios.post(
         "https://996eyi0mva.execute-api.us-east-2.amazonaws.com/dev-stage/saveImageMetadata",
         payload,
         {
@@ -71,13 +69,9 @@ const Upload = ({ isOpen, onRequestClose, addImage, fetchUserImages }) => {
           },
         }
       );
-      console.log("Image metadata saved successfully", response.data);
+      console.log("Image metadata saved successfully");
     } catch (err) {
-      console.error(
-        "Error saving image metadata:",
-        err.message,
-        err.response ? err.response.data : ""
-      );
+      console.error("Error saving image metadata:", err.message);
       throw err;
     }
   };
@@ -124,8 +118,21 @@ const Upload = ({ isOpen, onRequestClose, addImage, fetchUserImages }) => {
     }
   };
 
+  const uploadImageToS3 = async (file) => {
+    const fileName = `${uuidv4()}_${file.name}`;
+    try {
+      const result = await Storage.put(fileName, file, {
+        contentType: file.type,
+      });
+      return result.key; // S3 key of the uploaded image
+    } catch (error) {
+      console.error("Error uploading file to S3:", error);
+      throw error;
+    }
+  };
+
   const onDrop = useCallback(
-    (acceptedFiles) => {
+    async (acceptedFiles) => {
       if (!isAuthenticated) {
         setError("You must be authenticated to upload files.");
         return;
@@ -133,10 +140,13 @@ const Upload = ({ isOpen, onRequestClose, addImage, fetchUserImages }) => {
 
       const file = acceptedFiles[0];
       if (file) {
+        const fileKey = await uploadImageToS3(file);
+        const imageUrl = `https://${awsExports.aws_user_files_s3_bucket}.s3.${awsExports.aws_user_files_s3_bucket_region}.amazonaws.com/public/${fileKey}`;
+
         const reader = new FileReader();
         reader.onloadend = () => {
           const base64Image = reader.result.split(",")[1];
-          fetchAnalysis({ image_data: base64Image }, reader.result);
+          fetchAnalysis({ image_data: base64Image }, imageUrl);
         };
         reader.readAsDataURL(file);
       }
