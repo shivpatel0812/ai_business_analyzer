@@ -4,6 +4,8 @@ const axios = require("axios");
 const awsconfig = require("./aws-exports.js");
 const fs = require("fs");
 const path = require("path");
+const { Storage } = require("aws-amplify");
+const { v4: uuidv4 } = require("uuid");
 
 // Configure Amplify with the AWS settings
 Amplify.configure(awsconfig);
@@ -18,13 +20,16 @@ async function signIn(username, password) {
     await testApi(userId);
 
     // Upload an image, get its analysis, and save its metadata
-    const imagePath = path.join(__dirname, "image.png"); // Path to the image file
-    const imageId = "unique-image-id"; // Replace with actual image ID
+    const imagePath = path.join(__dirname, "BusinessCard3 (1).jpg"); // Path to the image file
+    const imageId = uuidv4(); // Generate a unique image ID
 
     const analysis = await getImageAnalysis(imagePath, userId);
     if (analysis) {
-      const imageUrl = await saveImageToS3(imagePath, imageId); // Upload the image to S3 and get its URL
-      await saveImageMetadata(userId, imageId, imageUrl, analysis);
+      const imageUrl = await uploadImageToS3(imagePath); // Upload the image to S3 and get its URL
+      if (imageUrl) {
+        await saveImageMetadata(userId, imageId, imageUrl, analysis);
+        console.log("Image metadata saved successfully");
+      }
     }
   } catch (error) {
     console.error("Failed to authenticate user:", error);
@@ -85,22 +90,18 @@ const getImageAnalysis = async (imagePath, userId) => {
   }
 };
 
-const saveImageToS3 = async (imagePath, imageId) => {
+const uploadImageToS3 = async (imagePath) => {
+  const fileName = `${uuidv4()}_${path.basename(imagePath)}`;
   try {
     const imageData = fs.readFileSync(imagePath);
-    const response = await axios.put(
-      `https://your-api-gateway-url-to-upload-image/${imageId}`,
-      imageData,
-      {
-        headers: {
-          "Content-Type": "image/png",
-        },
-      }
-    );
-    console.log("Image uploaded to S3 successfully:", response.data);
-    return response.data.imageUrl; // Assuming the response contains the image URL
-  } catch (err) {
-    console.error("Error uploading image to S3:", err.message);
+    const result = await Storage.put(fileName, imageData, {
+      contentType: "image/jpeg",
+    });
+    console.log("Image uploaded to S3 successfully:", result.key);
+    const imageUrl = `https://${awsconfig.aws_user_files_s3_bucket}.s3.${awsconfig.aws_user_files_s3_bucket_region}.amazonaws.com/public/${result.key}`;
+    return imageUrl; // Return the S3 URL of the uploaded image
+  } catch (error) {
+    console.error("Error uploading image to S3:", error);
     return null;
   }
 };
