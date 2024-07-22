@@ -9,6 +9,22 @@ import AnalysisModal from "./AnalysisModal";
 import { v4 as uuidv4 } from "uuid";
 import awsExports from "../aws-exports";
 
+import AWS from 'aws-sdk';
+import awsconfig from '../aws-exports'; 
+
+
+//----------------------------------------------
+  // Configure the AWS SDK
+  AWS.config.update({
+    region: awsconfig.aws_user_files_s3_bucket_region,
+    credentials: new AWS.CognitoIdentityCredentials({
+      IdentityPoolId: awsconfig.aws_cognito_identity_pool_id,
+    }),
+  });
+  
+  //----------------------------------------------
+
+
 const Upload = ({ isOpen, onRequestClose, addImage, fetchUserImages }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -42,6 +58,11 @@ const Upload = ({ isOpen, onRequestClose, addImage, fetchUserImages }) => {
   };
 
   const saveImageMetadata = async (userId, imageId, imageUrl, analysis) => {
+    if (!awsconfig || !awsconfig.aws_user_files_s3_bucket) {
+      console.error('awsconfig or aws_user_files_s3_bucket is not defined');
+      return;
+    }
+
     if (!userId || !imageId || !imageUrl || !analysis) {
       console.error("Missing required parameters:", {
         userId,
@@ -118,13 +139,48 @@ const Upload = ({ isOpen, onRequestClose, addImage, fetchUserImages }) => {
     }
   };
 
+
+
+  // const uploadImageToS3 = async (file) => {
+  //   const fileName = `${uuidv4()}_${file.name}`;
+  //   try {
+  //     const result = await Storage.put(fileName, file, {
+  //       contentType: file.type,
+  //       level: 'public',
+  //     });
+  //     return result.key; // S3 key of the uploaded image
+  //   } catch (error) {
+  //     console.error("Error uploading file to S3:", error);
+  //     throw error;
+  //   }
+  // };
+
+  console.log(awsconfig);
+
   const uploadImageToS3 = async (file) => {
     const fileName = `${uuidv4()}_${file.name}`;
+  
+    // Create a new S3 client
+    const s3 = new AWS.S3();
+  
+    // Ensure awsconfig.aws_user_files_s3_bucket is defined
+    if (!awsconfig.aws_user_files_s3_bucket) {
+      console.error("Bucket name is undefined");
+      return;
+    }
+  
+    // Set up the parameters for the S3 upload operation
+    const params = {
+      Bucket: awsconfig.aws_user_files_s3_bucket,
+      Key: `public/${fileName}`,
+      Body: file,
+      ContentType: file.type,
+    };
+  
+    // Use the S3 client to upload the file
     try {
-      const result = await Storage.put(fileName, file, {
-        contentType: file.type,
-      });
-      return result.key; // S3 key of the uploaded image
+      const result = await s3.upload(params).promise();
+      return result.Key; // S3 key of the uploaded image
     } catch (error) {
       console.error("Error uploading file to S3:", error);
       throw error;
