@@ -3,7 +3,6 @@ import axios from "axios";
 import { Routes, Route, Link, useNavigate } from "react-router-dom";
 import Home from "./components/Home";
 import Register from "./components/Register";
-import ConfirmSignUp from "./components/ConfirmSignup";
 import Login from "./components/Login";
 import About from "./components/About";
 import Shared from "./components/Shared";
@@ -15,7 +14,7 @@ import ShareModal from "./components/ShareModal";
 import SharedCards from "./components/SharedCards";
 import Friends from "./components/Friends";
 import "./App.css";
-import { Auth } from "aws-amplify";
+import { auth } from "./firebaseConfig";
 
 function App() {
   const [isUploadModalOpen, setUploadModalOpen] = useState(false);
@@ -25,149 +24,79 @@ function App() {
   const [isChatBoxOpen, setChatBoxOpen] = useState(false);
   const [isShareModalOpen, setShareModalOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isAuthChecked, setIsAuthChecked] = useState(false);
   const [friends, setFriends] = useState([]);
   const [sharedCards, setSharedCards] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const checkAuthStatus = async () => {
-      try {
-        const user = await Auth.currentAuthenticatedUser();
-        console.log("Authenticated user in checkAuthStatus:", user);
-        setIsAuthenticated(true);
-      } catch (error) {
-        console.log("User not authenticated in checkAuthStatus:", error);
-        setIsAuthenticated(false);
-      } finally {
-        setIsAuthChecked(true);
-      }
-    };
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setIsAuthenticated(!!user);
+    });
 
-    checkAuthStatus();
+    return () => unsubscribe();
   }, []);
 
   useEffect(() => {
-    if (
-      isAuthChecked &&
-      !isAuthenticated &&
-      window.location.pathname !== "/login"
-    ) {
-      navigate("/login");
+    if (isAuthenticated) {
+      fetchUserImages();
     }
-  }, [isAuthChecked, isAuthenticated, navigate]);
+  }, [isAuthenticated]);
 
-  const handleLoginSuccess = () => {
-    console.log("Login success handler called");
-    setIsAuthenticated(true);
-    setIsAuthChecked(true);
-    navigate("/upload"); // Redirect to upload page after successful login
-  };
-
-  const fetchUserId = async () => {
+  const fetchUserImages = async () => {
     try {
-      const user = await Auth.currentAuthenticatedUser();
-      console.log("User authenticated in fetchUserId:", user);
-      return user.attributes.sub;
-    } catch (error) {
-      console.error("Error fetching user ID:", error.message);
-      throw new Error("User not authenticated");
-    }
-  };
-
-  const fetchUserImages = async (userId) => {
-    try {
-      const response = await axios.get(
-        "https://996eyi0mva.execute-api.us-east-2.amazonaws.com/dev-stage/getUserImages",
-        { params: { userId } }
-      );
-      console.log("Images fetched successfully:", response.data);
-      setImages(response.data);
+      const user = auth.currentUser;
+      if (user) {
+        const userId = user.uid;
+        const response = await axios.get(
+          "https://996eyi0mva.execute-api.us-east-2.amazonaws.com/dev-stage/getUserImages",
+          { params: { userId } }
+        );
+        setImages(response.data);
+      }
     } catch (error) {
       console.error("Error fetching user images:", error);
     }
   };
 
-  useEffect(() => {
-    const fetchImages = async () => {
-      if (isAuthenticated) {
-        try {
-          const userId = await fetchUserId();
-          await fetchUserImages(userId);
-        } catch (error) {
-          console.error(error);
-        }
-      }
-    };
-
-    fetchImages();
-  }, [isAuthenticated]);
-
-  const openUploadModal = () => {
-    setUploadModalOpen(true);
-  };
-
-  const closeUploadModal = () => {
-    setUploadModalOpen(false);
-  };
-
+  const openUploadModal = () => setUploadModalOpen(true);
+  const closeUploadModal = () => setUploadModalOpen(false);
   const openShareModal = (image) => {
     setSelectedImage(image);
     setShareModalOpen(true);
   };
-
   const closeShareModal = () => {
     setShareModalOpen(false);
     setSelectedImage(null);
   };
-
-  const addImage = (newImage) => {
-    setImages([newImage, ...images]);
-  };
-
+  const addImage = (newImage) => setImages([newImage, ...images]);
   const openImageModal = (image) => {
     setSelectedImage(image);
     setImageModalOpen(true);
   };
-
   const closeImageModal = () => {
     setImageModalOpen(false);
     setSelectedImage(null);
   };
-
-  const openChatBox = () => {
-    setChatBoxOpen(true);
-  };
-
-  const closeChatBox = () => {
-    setChatBoxOpen(false);
-  };
-
-  const shareWithFriend = async (friendId, image) => {
+  const openChatBox = () => setChatBoxOpen(true);
+  const closeChatBox = () => setChatBoxOpen(false);
+  const shareWithFriend = (friendId, image) => {
     setSharedCards([...sharedCards, { ...image, sharedBy: friendId }]);
   };
-
-  const sendFriendRequest = async (friendName) => {
+  const sendFriendRequest = (friendName) => {
     console.log(`Sending friend request to ${friendName}`);
   };
-
-  const acceptFriendRequest = async (requestId) => {
+  const acceptFriendRequest = (requestId) => {
     console.log(`Accepting friend request with ID: ${requestId}`);
   };
-
   const handleLogout = async () => {
     try {
-      await Auth.signOut();
+      await auth.signOut();
       setIsAuthenticated(false);
       navigate("/login"); // Redirect to login page after logging out
     } catch (error) {
       console.error("Error logging out:", error);
     }
   };
-
-  if (!isAuthChecked) {
-    return <div>Loading...</div>;
-  }
 
   return (
     <div>
@@ -180,13 +109,9 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route
             path="/login"
-            element={<Login setIsAuthenticated={handleLoginSuccess} />}
+            element={<Login setIsAuthenticated={setIsAuthenticated} />}
           />
           <Route path="/register" element={<Register />} />
-          <Route
-            path="/confirm-sign-up"
-            element={<ConfirmSignUp setIsAuthenticated={handleLoginSuccess} />}
-          />
           {isAuthenticated && (
             <>
               <Route

@@ -18,13 +18,18 @@ const S3ImageDisplay = ({ images, openImageModal }) => {
             >
               {image.imageUrl && (
                 <img
-                  src={image.imageUrl.S}
+                  src={
+                    typeof image.imageUrl === "string"
+                      ? image.imageUrl
+                      : image.imageUrl.S
+                  }
                   alt="Uploaded"
                   className="card-image"
                 />
               )}
               <div className="analysis">
-                {image.analysis && JSON.stringify(image.analysis.M)}
+                {image.analysis &&
+                  JSON.stringify(image.analysis.M || image.analysis)}
               </div>
             </div>
           ))

@@ -1,27 +1,22 @@
 import React, { useState } from "react";
-import { Auth } from "aws-amplify";
+import { auth } from "../firebaseConfig";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import "../Login.css";
 
 const Login = ({ setIsAuthenticated }) => {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleLogin = async (event) => {
     event.preventDefault();
-    console.log("Attempting to log in...");
     try {
-      const user = await Auth.signIn(username, password);
-      console.log("Login successful:", user);
-
-      console.log("Setting isAuthenticated to true");
+      await signInWithEmailAndPassword(auth, email, password);
       setIsAuthenticated(true);
-      console.log("Navigating to upload page");
-      navigate("/upload");
+      navigate("/upload"); // Redirect to upload page after successful login
     } catch (err) {
-      console.error("Authentication error:", err);
       setError("Authentication Error");
     }
   };
@@ -33,9 +28,9 @@ const Login = ({ setIsAuthenticated }) => {
       <form onSubmit={handleLogin}>
         <input
           type="text"
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
         <input
           type="password"

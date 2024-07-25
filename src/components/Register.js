@@ -1,30 +1,19 @@
 import React, { useState } from "react";
-import { Auth } from "aws-amplify";
+import { auth } from "../firebaseConfig";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 
 const Register = () => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleRegister = async (event) => {
     event.preventDefault();
-
     try {
-      const formattedPhoneNumber = `+1${phoneNumber.replace(/[^0-9]/g, "")}`;
-
-      await Auth.signUp({
-        username,
-        password,
-        attributes: {
-          email,
-          phone_number: formattedPhoneNumber,
-        },
-      });
-      navigate("/confirm-sign-up", { state: { username } });
+      await createUserWithEmailAndPassword(auth, email, password);
+      navigate("/login"); // Redirect to login page after successful registration
     } catch (error) {
       setError(error.message);
     }
@@ -36,28 +25,16 @@ const Register = () => {
       {error && <p style={{ color: "red" }}>{error}</p>}
       <form onSubmit={handleRegister}>
         <input
-          type="text"
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <input
           type="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
         <input
-          type="text"
-          placeholder="Phone Number (e.g., 1234567890)"
-          value={phoneNumber}
-          onChange={(e) => setPhoneNumber(e.target.value)}
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
         />
         <button type="submit">Register</button>
       </form>
