@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Auth } from "aws-amplify";
 import { useLocation, useNavigate } from "react-router-dom";
+import { getAuth, applyActionCode } from "firebase/auth";
 
 const ConfirmSignUp = ({ setIsAuthenticated }) => {
   const [code, setCode] = useState("");
@@ -8,25 +8,23 @@ const ConfirmSignUp = ({ setIsAuthenticated }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const username = location.state?.username || "";
+  const auth = getAuth();
 
   const handleConfirmSignUp = async (event) => {
     event.preventDefault();
     try {
       console.log("Confirming sign up for username:", username);
-      await Auth.confirmSignUp(username, code);
+      // Assuming you get the action code from the confirmation link
+      await applyActionCode(auth, code);
 
       console.log("Sign up confirmed, signing in...");
-      const user = await Auth.signIn(username);
-      if (
-        user.challengeName === "SMS_MFA" ||
-        user.challengeName === "SOFTWARE_TOKEN_MFA"
-      ) {
-        console.log("MFA required");
-        navigate("/login", { state: { username } });
-      } else {
+      const user = auth.currentUser;
+      if (user) {
         console.log("Sign in complete, setting isAuthenticated to true");
         setIsAuthenticated(true);
         navigate("/upload"); // Redirect to upload page after successful login
+      } else {
+        throw new Error("User not authenticated");
       }
     } catch (err) {
       console.error("Error confirming sign up:", err);

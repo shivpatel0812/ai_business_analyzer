@@ -2,12 +2,13 @@ import React, { useState, useCallback, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import axios from "axios";
 import Modal from "react-modal";
-import { Storage } from "aws-amplify";
+import { Storage } from "@aws-amplify";
 import "../styles.css";
 import "./UploadStyles.css";
 import AnalysisModal from "./AnalysisModal";
 import { v4 as uuidv4 } from "uuid";
-import configureAwsWithFirebaseToken from "./configureAws";
+import configureAwsWithFirebaseToken from "../configureAws";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 const Upload = ({ isOpen, onRequestClose, addImage, fetchUserImages }) => {
   const [loading, setLoading] = useState(false);
@@ -16,24 +17,27 @@ const Upload = ({ isOpen, onRequestClose, addImage, fetchUserImages }) => {
   const [uploadedImage, setUploadedImage] = useState({});
   const [recentImage, setRecentImage] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const auth = getAuth();
 
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        await configureAwsWithFirebaseToken();
+    configureAwsWithFirebaseToken();
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
         setIsAuthenticated(true);
-      } catch (error) {
-        console.error("Authentication error:", error);
+      } else {
         setIsAuthenticated(false);
       }
-    };
-    checkAuth();
-  }, []);
+    });
+  }, [auth]);
 
   const fetchUserId = async () => {
     try {
-      const user = await AmplifyAuth.currentAuthenticatedUser();
-      return user.attributes.sub;
+      const user = auth.currentUser;
+      if (user) {
+        return user.uid;
+      } else {
+        throw new Error("User not authenticated");
+      }
     } catch (error) {
       console.error("Error fetching user ID:", error.message);
       throw new Error("User not authenticated");
@@ -150,7 +154,7 @@ const Upload = ({ isOpen, onRequestClose, addImage, fetchUserImages }) => {
         const fileKey = await uploadImageToS3(file);
         console.log("File uploaded successfully, key:", fileKey);
 
-        const imageUrl = await Storage.get(fileKey, { level: "public" });
+        const imageUrl = await getS3Url(fileKey);
         console.log("Image URL:", imageUrl);
 
         // Use FileReader to get base64 data
