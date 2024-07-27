@@ -1,34 +1,32 @@
-import { Auth as AmplifyAuth } from "aws-amplify";
+import { Amplify } from "@aws-amplify/core";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import awsconfig from "../aws-exports";
-import { CognitoIdentityClient } from "@aws-sdk/client-cognito-identity";
-import { fromCognitoIdentityPool } from "@aws-sdk/credential-providers";
+import awsconfig from "./aws-exports";
 
-// Initialize AWS Amplify
-AmplifyAuth.configure(awsconfig);
+// Initialize AWS Amplify with only the necessary configurations
+Amplify.configure({
+  Storage: {
+    AWSS3: {
+      bucket: awsconfig.aws_user_files_s3_bucket,
+      region: awsconfig.aws_user_files_s3_bucket_region,
+    },
+  },
+});
 
-const configureAwsWithFirebaseToken = async () => {
+const configureAwsWithFirebaseToken = () => {
   const auth = getAuth();
   onAuthStateChanged(auth, async (user) => {
     if (user) {
       const idToken = await user.getIdToken(true);
 
-      const cognitoIdentity = new CognitoIdentityClient({
-        region: awsconfig.aws_project_region,
-      });
-
-      const credentials = fromCognitoIdentityPool({
-        client: cognitoIdentity,
-        identityPoolId: awsconfig.aws_cognito_identity_pool_id,
-        logins: {
-          [`cognito-identity.amazonaws.com`]: idToken,
+      Amplify.configure({
+        Auth: {
+          identityPoolId: awsconfig.aws_cognito_identity_pool_id,
+          region: awsconfig.aws_project_region,
+          identityPoolRegion: awsconfig.aws_project_region,
+          logins: {
+            firebase: idToken,
+          },
         },
-      });
-
-      // Configure AWS with the credentials
-      AmplifyAuth.configure({
-        ...awsconfig,
-        credentials,
       });
 
       console.log("AWS configured with Firebase token.");
