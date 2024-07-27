@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import axios from "axios";
 import Modal from "react-modal";
-import { Storage } from "@aws-amplify";
+import { getUrl, uploadData } from "@aws-amplify/storage";
 import "../styles.css";
 import "./UploadStyles.css";
 import AnalysisModal from "./AnalysisModal";
@@ -107,12 +107,12 @@ const Upload = ({ isOpen, onRequestClose, addImage, fetchUserImages }) => {
 
     const fileName = `${uuidv4()}_${file.name}`;
     try {
-      const result = await Storage.put(fileName, file, {
+      const result = await uploadData(fileName, file, {
         contentType: file.type,
         level: "public",
       });
       console.log("Upload successful:", result);
-      return result.key;
+      return fileName; // return the key instead
     } catch (error) {
       console.error("Error uploading to S3:", error);
       throw error;
@@ -121,7 +121,8 @@ const Upload = ({ isOpen, onRequestClose, addImage, fetchUserImages }) => {
 
   const getS3Url = async (key) => {
     try {
-      return await Storage.get(key, { level: "public" });
+      const url = await getUrl(key, { level: "public" });
+      return url;
     } catch (error) {
       console.error("Error getting S3 URL:", error);
       throw error;
