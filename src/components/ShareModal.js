@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Modal from "react-modal";
+import { collection, addDoc, getFirestore } from "firebase/firestore";
 import "../styles.css";
 
 const ShareModal = ({
@@ -10,6 +11,7 @@ const ShareModal = ({
   onShareWithFriend,
 }) => {
   const [selectedFriend, setSelectedFriend] = useState("");
+  const firestore = getFirestore();
 
   const shareExternally = () => {
     const shareData = {
@@ -25,9 +27,17 @@ const ShareModal = ({
     }
   };
 
-  const shareWithFriend = () => {
-    onShareWithFriend(selectedFriend, image);
-    onRequestClose();
+  const shareWithFriend = async () => {
+    try {
+      await addDoc(collection(firestore, "SharedCards"), {
+        sharedBy: selectedFriend,
+        ...image,
+      });
+      onShareWithFriend(selectedFriend, image);
+      onRequestClose();
+    } catch (error) {
+      console.error("Error sharing with friend:", error);
+    }
   };
 
   return (

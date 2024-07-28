@@ -15,6 +15,7 @@ import SharedCards from "./components/SharedCards";
 import Friends from "./components/Friends";
 import "./App.css";
 import { auth } from "./firebaseConfig";
+import { collection, getDocs, getFirestore } from "firebase/firestore";
 
 function App() {
   const [isUploadModalOpen, setUploadModalOpen] = useState(false);
@@ -27,6 +28,7 @@ function App() {
   const [friends, setFriends] = useState([]);
   const [sharedCards, setSharedCards] = useState([]);
   const navigate = useNavigate();
+  const firestore = getFirestore();
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -47,11 +49,13 @@ function App() {
       const user = auth.currentUser;
       if (user) {
         const userId = user.uid;
-        const response = await axios.get(
-          "https://996eyi0mva.execute-api.us-east-2.amazonaws.com/dev-stage/getUserImages",
-          { params: { userId } }
+        const querySnapshot = await getDocs(
+          collection(firestore, "UserImages")
         );
-        setImages(response.data);
+        const userImages = querySnapshot.docs
+          .filter((doc) => doc.data().userId === userId)
+          .map((doc) => doc.data());
+        setImages(userImages);
       }
     } catch (error) {
       console.error("Error fetching user images:", error);

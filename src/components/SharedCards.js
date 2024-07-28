@@ -1,10 +1,28 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { getFirestore, collection, getDocs } from "firebase/firestore";
 import "../SharedCards.css";
 
-const SharedCards = ({ sharedCards }) => {
+const SharedCards = ({ userId }) => {
   const [view, setView] = useState("all");
   const [selectedUser, setSelectedUser] = useState(null);
+  const [sharedCards, setSharedCards] = useState([]);
+  const firestore = getFirestore();
+
+  useEffect(() => {
+    const fetchSharedCards = async () => {
+      try {
+        const querySnapshot = await getDocs(
+          collection(firestore, "SharedCards")
+        );
+        const cards = querySnapshot.docs.map((doc) => doc.data());
+        setSharedCards(cards);
+      } catch (error) {
+        console.error("Error fetching shared cards:", error);
+      }
+    };
+
+    fetchSharedCards();
+  }, []);
 
   const users = [...new Set(sharedCards.map((card) => card.sharedBy))];
 

@@ -6,7 +6,7 @@ import awsconfig from "./aws-exports";
 import App from "./App";
 import configureAwsWithFirebaseToken from "./configureAws";
 
-// Initialize AWS Amplify with Storage configuration
+// Initialize AWS Amplify with Storage configuration only
 Amplify.configure({
   Storage: {
     AWSS3: {

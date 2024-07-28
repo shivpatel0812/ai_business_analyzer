@@ -2,7 +2,7 @@ import { Amplify } from "@aws-amplify/core";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import awsconfig from "./aws-exports";
 
-// Initialize AWS Amplify with only the necessary configurations
+// Initial AWS Amplify Storage configuration
 Amplify.configure({
   Storage: {
     AWSS3: {
@@ -17,7 +17,10 @@ const configureAwsWithFirebaseToken = () => {
   onAuthStateChanged(auth, async (user) => {
     if (user) {
       const idToken = await user.getIdToken(true);
-      // Do not configure Auth for Amplify as we are using Firebase Auth
+
+      // Ensure no Auth configuration is set, only log the token for now
+      console.log("User authenticated with Firebase:", idToken);
+      // Optionally, you can add any other Firebase-related logic here
 
       console.log("AWS configured with Firebase token.");
     } else {

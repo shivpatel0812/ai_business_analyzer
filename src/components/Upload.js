@@ -2,13 +2,14 @@ import React, { useState, useCallback, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import axios from "axios";
 import Modal from "react-modal";
-import { getUrl, uploadData } from "@aws-amplify/storage";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { collection, addDoc, getFirestore } from "firebase/firestore";
 import "../styles.css";
 import "./UploadStyles.css";
 import AnalysisModal from "./AnalysisModal";
 import { v4 as uuidv4 } from "uuid";
-import configureAwsWithFirebaseToken from "../configureAws";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { auth, storage, firestore } from "../firebaseConfig";
 
 const Upload = ({ isOpen, onRequestClose, addImage, fetchUserImages }) => {
   const [loading, setLoading] = useState(false);
@@ -17,10 +18,8 @@ const Upload = ({ isOpen, onRequestClose, addImage, fetchUserImages }) => {
   const [uploadedImage, setUploadedImage] = useState({});
   const [recentImage, setRecentImage] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const auth = getAuth();
 
   useEffect(() => {
-    configureAwsWithFirebaseToken();
     onAuthStateChanged(auth, (user) => {
       if (user) {
         setIsAuthenticated(true);
@@ -28,7 +27,7 @@ const Upload = ({ isOpen, onRequestClose, addImage, fetchUserImages }) => {
         setIsAuthenticated(false);
       }
     });
-  }, [auth]);
+  }, []);
 
   const fetchUserId = async () => {
     try {
@@ -51,14 +50,12 @@ const Upload = ({ isOpen, onRequestClose, addImage, fetchUserImages }) => {
     }
 
     try {
-      const payload = { userId, imageId, imageUrl, analysis };
-      await axios.post(
-        "https://996eyi0mva.execute-api.us-east-2.amazonaws.com/dev-stage/saveImageMetadata",
-        payload,
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      await addDoc(collection(firestore, "UserImages"), {
+        userId,
+        imageId,
+        imageUrl,
+        analysis,
+      });
       console.log("Image metadata saved successfully");
     } catch (err) {
       console.error("Error saving image metadata:", err.message);
@@ -100,31 +97,20 @@ const Upload = ({ isOpen, onRequestClose, addImage, fetchUserImages }) => {
     }
   };
 
-  const uploadImageToS3 = async (file) => {
+  const uploadImageToFirebase = async (file) => {
     if (!file || !(file instanceof File)) {
       throw new Error("Invalid file object");
     }
 
     const fileName = `${uuidv4()}_${file.name}`;
-    try {
-      const result = await uploadData(fileName, file, {
-        contentType: file.type,
-        level: "public",
-      });
-      console.log("Upload successful:", result);
-      return fileName; // return the key instead
-    } catch (error) {
-      console.error("Error uploading to S3:", error);
-      throw error;
-    }
-  };
+    const storageRef = ref(storage, fileName);
 
-  const getS3Url = async (key) => {
     try {
-      const url = await getUrl(key, { level: "public" });
-      return url;
+      await uploadBytes(storageRef, file);
+      const imageUrl = await getDownloadURL(storageRef);
+      return imageUrl;
     } catch (error) {
-      console.error("Error getting S3 URL:", error);
+      console.error("Error uploading to Firebase Storage:", error);
       throw error;
     }
   };
@@ -152,11 +138,8 @@ const Upload = ({ isOpen, onRequestClose, addImage, fetchUserImages }) => {
       );
 
       try {
-        const fileKey = await uploadImageToS3(file);
-        console.log("File uploaded successfully, key:", fileKey);
-
-        const imageUrl = await getS3Url(fileKey);
-        console.log("Image URL:", imageUrl);
+        const imageUrl = await uploadImageToFirebase(file);
+        console.log("File uploaded successfully, URL:", imageUrl);
 
         // Use FileReader to get base64 data
         const reader = new FileReader();
@@ -176,7 +159,7 @@ const Upload = ({ isOpen, onRequestClose, addImage, fetchUserImages }) => {
         );
       }
     },
-    [isAuthenticated, uploadImageToS3, fetchAnalysis]
+    [isAuthenticated, uploadImageToFirebase, fetchAnalysis]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
