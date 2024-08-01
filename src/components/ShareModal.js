@@ -55,10 +55,13 @@ const ShareModal = ({ isOpen, onRequestClose, image }) => {
     }
 
     try {
+      if (!image || !image.imageUrl || !image.analysis) {
+        throw new Error("Invalid image data. Please try again.");
+      }
       await addDoc(collection(firestore, "SharedCards"), {
         sharedBy: auth.currentUser.email,
         sharedWith: selectedFriend,
-        imageUrl: image.url,
+        imageUrl: image.imageUrl,
         analysis: image.analysis,
       });
       setMessage("Card shared successfully with friend!");
@@ -77,10 +80,13 @@ const ShareModal = ({ isOpen, onRequestClose, image }) => {
     }
 
     try {
+      if (!image || !image.imageUrl || !image.analysis) {
+        throw new Error("Invalid image data. Please try again.");
+      }
       await addDoc(collection(firestore, "OrganizationSharedCards"), {
         organizationId: selectedOrganization,
         sharedBy: auth.currentUser.email,
-        imageUrl: image.url,
+        imageUrl: image.imageUrl,
         analysis: image.analysis,
       });
       setMessage("Card shared successfully with organization!");
@@ -127,7 +133,7 @@ const ShareModal = ({ isOpen, onRequestClose, image }) => {
           >
             <option value="">Select Organization</option>
             {organizations.map((org) => (
-              <option key={org.id} value={org.name}>
+              <option key={org.id} value={org.id}>
                 {org.name}
               </option>
             ))}
