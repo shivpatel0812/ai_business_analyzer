@@ -1,42 +1,93 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Modal from "react-modal";
-import { collection, addDoc, getFirestore } from "firebase/firestore";
-import "../styles.css";
+import { getFirestore, collection, addDoc, getDocs } from "firebase/firestore";
+import { auth } from "../firebaseConfig";
+import "../ShareModal.css";
 
-const ShareModal = ({
-  isOpen,
-  onRequestClose,
-  image,
-  friends,
-  onShareWithFriend,
-}) => {
+const ShareModal = ({ isOpen, onRequestClose, image }) => {
+  const [friends, setFriends] = useState([]);
+  const [organizations, setOrganizations] = useState([]);
   const [selectedFriend, setSelectedFriend] = useState("");
+  const [selectedOrganization, setSelectedOrganization] = useState("");
+  const [message, setMessage] = useState("");
   const firestore = getFirestore();
 
-  const shareExternally = () => {
-    const shareData = {
-      title: "Shared Card Analysis",
-      text: `Check out this analysis: ${image.analysis.summary}`,
-      url: image.url,
+  useEffect(() => {
+    const fetchFriends = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(firestore, "Friends"));
+        const friendsList = querySnapshot.docs.map((doc) => {
+          const friendData = doc.data();
+          return friendData.user1 === auth.currentUser.email
+            ? friendData.user2
+            : friendData.user1;
+        });
+        setFriends(friendsList);
+      } catch (error) {
+        console.error("Error fetching friends:", error);
+      }
     };
 
+    const fetchOrganizations = async () => {
+      try {
+        const querySnapshot = await getDocs(
+          collection(firestore, "Organizations")
+        );
+        const orgList = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          name: doc.data().name,
+        }));
+        setOrganizations(orgList);
+      } catch (error) {
+        console.error("Error fetching organizations:", error);
+      }
+    };
+
+    fetchFriends();
+    fetchOrganizations();
+  }, [firestore]);
+
+  const handleShareWithFriend = async () => {
+    setMessage(""); // Reset message
+    if (!selectedFriend) {
+      setMessage("Please select a friend to share with.");
+      return;
+    }
+
     try {
-      navigator.share(shareData);
-    } catch (err) {
-      console.error("Error sharing externally:", err);
+      await addDoc(collection(firestore, "SharedCards"), {
+        sharedBy: auth.currentUser.email,
+        sharedWith: selectedFriend,
+        imageUrl: image.url,
+        analysis: image.analysis,
+      });
+      setMessage("Card shared successfully with friend!");
+      setSelectedFriend("");
+    } catch (error) {
+      console.error("Error sharing card with friend:", error);
+      setMessage(error.message);
     }
   };
 
-  const shareWithFriend = async () => {
+  const handleShareWithOrganization = async () => {
+    setMessage(""); // Reset message
+    if (!selectedOrganization) {
+      setMessage("Please select an organization to share with.");
+      return;
+    }
+
     try {
-      await addDoc(collection(firestore, "SharedCards"), {
-        sharedBy: selectedFriend,
-        ...image,
+      await addDoc(collection(firestore, "OrganizationSharedCards"), {
+        organizationId: selectedOrganization,
+        sharedBy: auth.currentUser.email,
+        imageUrl: image.url,
+        analysis: image.analysis,
       });
-      onShareWithFriend(selectedFriend, image);
-      onRequestClose();
+      setMessage("Card shared successfully with organization!");
+      setSelectedOrganization("");
     } catch (error) {
-      console.error("Error sharing with friend:", error);
+      console.error("Error sharing card with organization:", error);
+      setMessage(error.message);
     }
   };
 
@@ -47,21 +98,46 @@ const ShareModal = ({
       className="modal"
       overlayClassName="modal-overlay"
     >
-      <h2>Share Analysis</h2>
-      <button onClick={shareExternally}>Share Externally</button>
-      <div>
-        <h3>Share with a Friend</h3>
-        <select
-          value={selectedFriend}
-          onChange={(e) => setSelectedFriend(e.target.value)}
-        >
-          {friends.map((friend) => (
-            <option key={friend.id} value={friend.id}>
-              {friend.name}
-            </option>
-          ))}
-        </select>
-        <button onClick={shareWithFriend}>Share with Friend</button>
+      <div className="modal-content">
+        <button onClick={onRequestClose} className="modal-close">
+          &times;
+        </button>
+        <h2>Share Card</h2>
+        <div>
+          <h3>Share with a Friend</h3>
+          <select
+            value={selectedFriend}
+            onChange={(e) => setSelectedFriend(e.target.value)}
+          >
+            <option value="">Select Friend</option>
+            {friends.map((friend, index) => (
+              <option key={index} value={friend}>
+                {friend}
+              </option>
+            ))}
+          </select>
+          <button onClick={handleShareWithFriend}>Share with Friend</button>
+        </div>
+
+        <div>
+          <h3>Share with an Organization</h3>
+          <select
+            value={selectedOrganization}
+            onChange={(e) => setSelectedOrganization(e.target.value)}
+          >
+            <option value="">Select Organization</option>
+            {organizations.map((org) => (
+              <option key={org.id} value={org.name}>
+                {org.name}
+              </option>
+            ))}
+          </select>
+          <button onClick={handleShareWithOrganization}>
+            Share with Organization
+          </button>
+        </div>
+
+        {message && <p>{message}</p>}
       </div>
     </Modal>
   );

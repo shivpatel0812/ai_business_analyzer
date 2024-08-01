@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
+import Modal from "react-modal";
 import "../SharedCards.css";
+import CardDetailsModal from "./CardDetailsModal";
 
-const SharedCards = ({ userId }) => {
+const SharedCards = () => {
   const [view, setView] = useState("all");
   const [selectedUser, setSelectedUser] = useState(null);
   const [sharedCards, setSharedCards] = useState([]);
+  const [selectedCard, setSelectedCard] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const firestore = getFirestore();
 
   useEffect(() => {
@@ -20,11 +24,18 @@ const SharedCards = ({ userId }) => {
         console.error("Error fetching shared cards:", error);
       }
     };
-
     fetchSharedCards();
-  }, []);
+  }, [firestore]);
 
-  const users = [...new Set(sharedCards.map((card) => card.sharedBy))];
+  const openModal = (card) => {
+    setSelectedCard(card);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedCard(null);
+  };
 
   const filteredCards =
     view === "user" && selectedUser
@@ -42,25 +53,39 @@ const SharedCards = ({ userId }) => {
         <div>
           <h2>Select User</h2>
           <select
-            value={selectedUser}
+            value={selectedUser || ""}
             onChange={(e) => setSelectedUser(e.target.value)}
           >
-            {users.map((user) => (
-              <option key={user} value={user}>
-                {user}
-              </option>
-            ))}
+            <option value="" disabled>
+              Select a user
+            </option>
+            {Array.from(new Set(sharedCards.map((card) => card.sharedBy))).map(
+              (user) => (
+                <option key={user} value={user}>
+                  {user}
+                </option>
+              )
+            )}
           </select>
         </div>
       )}
       <div className="cards-list">
         {filteredCards.map((card, index) => (
-          <div key={index} className="card-item">
-            <img src={card.url} alt="Shared Card" />
-            <p>{card.analysis.summary}</p>
+          <div
+            key={index}
+            className="card-item"
+            onClick={() => openModal(card)}
+          >
+            <img src={card.imageUrl} alt="Shared Card" />
+            <p>{card.analysis?.summary.split(" ").slice(0, 10).join(" ")}...</p>
           </div>
         ))}
       </div>
+      <CardDetailsModal
+        isOpen={isModalOpen}
+        onRequestClose={closeModal}
+        card={selectedCard}
+      />
     </div>
   );
 };

@@ -141,7 +141,6 @@ const Upload = ({ isOpen, onRequestClose, addImage, fetchUserImages }) => {
         const imageUrl = await uploadImageToFirebase(file);
         console.log("File uploaded successfully, URL:", imageUrl);
 
-        // Use FileReader to get base64 data
         const reader = new FileReader();
         reader.onload = async (e) => {
           const base64Image = e.target.result.split(",")[1];

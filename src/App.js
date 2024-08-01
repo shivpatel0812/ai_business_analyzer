@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { Routes, Route, Link, useNavigate } from "react-router-dom";
 import Home from "./components/Home";
 import Register from "./components/Register";
@@ -13,6 +12,8 @@ import ChatBox from "./components/ChatBox";
 import ShareModal from "./components/ShareModal";
 import SharedCards from "./components/SharedCards";
 import Friends from "./components/Friends";
+import Organizations from "./components/Organizations";
+import OrganizationDetails from "./components/OrganizationDetails";
 import "./App.css";
 import { auth } from "./firebaseConfig";
 import { collection, getDocs, getFirestore } from "firebase/firestore";
@@ -26,39 +27,50 @@ function App() {
   const [isShareModalOpen, setShareModalOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [friends, setFriends] = useState([]);
-  const [sharedCards, setSharedCards] = useState([]);
   const navigate = useNavigate();
   const firestore = getFirestore();
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setIsAuthenticated(!!user);
+      if (user) {
+        fetchUserImages();
+        fetchFriends();
+      }
     });
 
     return () => unsubscribe();
   }, []);
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      fetchUserImages();
-    }
-  }, [isAuthenticated]);
-
   const fetchUserImages = async () => {
     try {
       const user = auth.currentUser;
       if (user) {
-        const userId = user.uid;
         const querySnapshot = await getDocs(
           collection(firestore, "UserImages")
         );
         const userImages = querySnapshot.docs
-          .filter((doc) => doc.data().userId === userId)
-          .map((doc) => doc.data());
+          .filter((doc) => doc.data().userId === user.uid)
+          .map((doc) => ({ ...doc.data(), id: doc.id }));
         setImages(userImages);
       }
     } catch (error) {
       console.error("Error fetching user images:", error);
+    }
+  };
+
+  const fetchFriends = async () => {
+    try {
+      const user = auth.currentUser;
+      if (user) {
+        const querySnapshot = await getDocs(collection(firestore, "Friends"));
+        const userFriends = querySnapshot.docs
+          .filter((doc) => doc.data().user1 === user.email)
+          .map((doc) => doc.data().user2);
+        setFriends(userFriends);
+      }
+    } catch (error) {
+      console.error("Error fetching friends:", error);
     }
   };
 
@@ -67,6 +79,7 @@ function App() {
   const openShareModal = (image) => {
     setSelectedImage(image);
     setShareModalOpen(true);
+    console.log("openShareModal called, selectedImage set:", image);
   };
   const closeShareModal = () => {
     setShareModalOpen(false);
@@ -83,20 +96,11 @@ function App() {
   };
   const openChatBox = () => setChatBoxOpen(true);
   const closeChatBox = () => setChatBoxOpen(false);
-  const shareWithFriend = (friendId, image) => {
-    setSharedCards([...sharedCards, { ...image, sharedBy: friendId }]);
-  };
-  const sendFriendRequest = (friendName) => {
-    console.log(`Sending friend request to ${friendName}`);
-  };
-  const acceptFriendRequest = (requestId) => {
-    console.log(`Accepting friend request with ID: ${requestId}`);
-  };
   const handleLogout = async () => {
     try {
       await auth.signOut();
       setIsAuthenticated(false);
-      navigate("/login"); // Redirect to login page after logging out
+      navigate("/login");
     } catch (error) {
       console.error("Error logging out:", error);
     }
@@ -146,19 +150,12 @@ function App() {
                   />
                 }
               />
+              <Route path="/shared-cards" element={<SharedCards />} />
+              <Route path="/friends" element={<Friends />} />
+              <Route path="/organizations" element={<Organizations />} />
               <Route
-                path="/shared-cards"
-                element={<SharedCards sharedCards={sharedCards} />}
-              />
-              <Route
-                path="/friends"
-                element={
-                  <Friends
-                    friends={friends}
-                    onSendRequest={sendFriendRequest}
-                    onAcceptRequest={acceptFriendRequest}
-                  />
-                }
+                path="/organizations/:orgName"
+                element={<OrganizationDetails />}
               />
             </>
           )}
@@ -170,13 +167,14 @@ function App() {
             isOpen={isImageModalOpen}
             onRequestClose={closeImageModal}
             image={selectedImage}
+            friends={friends}
           />
           <ShareModal
             isOpen={isShareModalOpen}
             onRequestClose={closeShareModal}
             image={selectedImage}
+            userId={auth.currentUser ? auth.currentUser.uid : null}
             friends={friends}
-            onShareWithFriend={shareWithFriend}
           />
           <ChatBox
             isOpen={isChatBoxOpen}
@@ -201,6 +199,7 @@ function NavBar({ isAuthenticated, onLogout }) {
           <Link to="/uploaded-cards">Uploaded Cards</Link>
           <Link to="/shared-cards">Shared Cards</Link>
           <Link to="/friends">Friends</Link>
+          <Link to="/organizations">Organizations</Link>
           <button onClick={onLogout}>Logout</button>
         </>
       )}

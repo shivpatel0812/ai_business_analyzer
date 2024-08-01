@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import Modal from "react-modal";
+import ShareModal from "./ShareModal"; // Import ShareModal
 import "../styles.css";
 
-const AnalysisModal = ({ isOpen, onRequestClose, image = {} }) => {
+const AnalysisModal = ({ isOpen, onRequestClose, image = {}, friends }) => {
   const [contactModalOpen, setContactModalOpen] = useState(false);
   const [companyModalOpen, setCompanyModalOpen] = useState(false);
   const [newsModalOpen, setNewsModalOpen] = useState(false);
   const [interviewModalOpen, setInterviewModalOpen] = useState(false);
+  const [isShareModalOpen, setShareModalOpen] = useState(false); // State for ShareModal
 
   const renderContactInfo = (contact = {}) => {
     return (
@@ -109,6 +111,12 @@ const AnalysisModal = ({ isOpen, onRequestClose, image = {} }) => {
             {JSON.stringify(image.analysis?.interview_questions, null, 2)}
           </pre>
         </div>
+        <button
+          onClick={() => setShareModalOpen(true)}
+          className="upload-button"
+        >
+          Share
+        </button>
       </div>
 
       <Modal
@@ -184,6 +192,13 @@ const AnalysisModal = ({ isOpen, onRequestClose, image = {} }) => {
           </pre>
         </div>
       </Modal>
+
+      <ShareModal
+        isOpen={isShareModalOpen}
+        onRequestClose={() => setShareModalOpen(false)}
+        image={image}
+        friends={friends}
+      />
     </Modal>
   );
 };
