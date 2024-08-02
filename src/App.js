@@ -14,7 +14,8 @@ import SharedCards from "./components/SharedCards";
 import Friends from "./components/Friends";
 import Organizations from "./components/Organizations";
 import OrganizationDetails from "./components/OrganizationDetails";
-import CreateOrganization from "./components/CreateOrganization"; // Import CreateOrganization
+import CreateOrganization from "./components/CreateOrganization";
+import OrganizationInvitations from "./components/OrganizationInvitations"; // Import the new component
 import "./App.css";
 import { auth } from "./firebaseConfig";
 import { collection, getDocs, getFirestore } from "firebase/firestore";
@@ -160,7 +161,11 @@ function App() {
               />
               <Route
                 path="/create-organization"
-                element={<CreateOrganization />} // Add the route for CreateOrganization
+                element={<CreateOrganization />}
+              />
+              <Route
+                path="/organization-invitations"
+                element={<OrganizationInvitations />} // New route for invitations
               />
             </>
           )}
@@ -205,6 +210,8 @@ function NavBar({ isAuthenticated, onLogout }) {
           <Link to="/shared-cards">Shared Cards</Link>
           <Link to="/friends">Friends</Link>
           <Link to="/organizations">Organizations</Link>
+          <Link to="/organization-invitations">Invitations</Link>{" "}
+          {/* New link for invitations */}
           <button onClick={onLogout}>Logout</button>
         </>
       )}

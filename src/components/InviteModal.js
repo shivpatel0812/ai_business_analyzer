@@ -4,7 +4,7 @@ import { getFirestore, collection, addDoc, getDocs } from "firebase/firestore";
 import { auth } from "../firebaseConfig";
 import "../InviteModal.css";
 
-const InviteModal = ({ isOpen, onRequestClose, organizationName }) => {
+const InviteModal = ({ isOpen, onRequestClose, organizationName, orgId }) => {
   const [friends, setFriends] = useState([]);
   const [selectedFriend, setSelectedFriend] = useState("");
   const [newUserEmail, setNewUserEmail] = useState("");
@@ -45,6 +45,7 @@ const InviteModal = ({ isOpen, onRequestClose, organizationName }) => {
     try {
       await addDoc(collection(firestore, "OrganizationInvitations"), {
         organizationName: organizationName,
+        organizationId: orgId, // Ensure the orgId is provided
         invitedBy: auth.currentUser.email,
         invitedUser: selectedFriend,
       });
@@ -70,6 +71,7 @@ const InviteModal = ({ isOpen, onRequestClose, organizationName }) => {
     try {
       await addDoc(collection(firestore, "OrganizationInvitations"), {
         organizationName: organizationName,
+        organizationId: orgId, // Ensure the orgId is provided
         invitedBy: auth.currentUser.email,
         invitedUser: newUserEmail,
       });
