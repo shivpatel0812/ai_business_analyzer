@@ -14,6 +14,7 @@ import SharedCards from "./components/SharedCards";
 import Friends from "./components/Friends";
 import Organizations from "./components/Organizations";
 import OrganizationDetails from "./components/OrganizationDetails";
+import CreateOrganization from "./components/CreateOrganization"; // Import CreateOrganization
 import "./App.css";
 import { auth } from "./firebaseConfig";
 import { collection, getDocs, getFirestore } from "firebase/firestore";
@@ -156,6 +157,10 @@ function App() {
               <Route
                 path="/organizations/:orgName"
                 element={<OrganizationDetails />}
+              />
+              <Route
+                path="/create-organization"
+                element={<CreateOrganization />} // Add the route for CreateOrganization
               />
             </>
           )}

@@ -1,102 +1,72 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Modal from "react-modal";
-import { collection, getDocs, addDoc } from "firebase/firestore";
-import { getFirestore } from "firebase/firestore";
+import { getFirestore, collection, getDocs } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
 import "../Organization.css";
 
 const Organizations = () => {
   const [organizations, setOrganizations] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [newOrganizationName, setNewOrganizationName] = useState("");
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
   const firestore = getFirestore();
+  const auth = getAuth();
 
   useEffect(() => {
     const fetchOrganizations = async () => {
+      if (!auth.currentUser) return;
+
       try {
-        const querySnapshot = await getDocs(
+        const orgQuerySnapshot = await getDocs(
           collection(firestore, "Organizations")
         );
-        const orgs = querySnapshot.docs.map((doc) => doc.data());
-        setOrganizations(orgs);
+        const userOrganizations = orgQuerySnapshot.docs.filter((doc) => {
+          const data = doc.data();
+          return data.members && data.members.includes(auth.currentUser.email);
+        });
+
+        const userOrgData = userOrganizations.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setOrganizations(userOrgData);
+        console.log("Fetched organizations:", userOrgData);
       } catch (error) {
         console.error("Error fetching organizations:", error);
+        setError("Error fetching organizations.");
       }
     };
 
     fetchOrganizations();
-  }, [firestore]);
+  }, [firestore, auth.currentUser]);
 
-  const createOrganization = async () => {
-    if (!newOrganizationName.trim()) {
-      console.error("Organization name cannot be empty.");
-      return;
-    }
-
-    try {
-      await addDoc(collection(firestore, "Organizations"), {
-        name: newOrganizationName.trim(),
-        members: [],
-      });
-
-      console.log(
-        "Organization created with name: ",
-        newOrganizationName.trim()
-      );
-      setNewOrganizationName("");
-      setIsModalOpen(false);
-
-      // Fetch the updated list of organizations
-      const querySnapshot = await getDocs(
-        collection(firestore, "Organizations")
-      );
-      const orgs = querySnapshot.docs.map((doc) => doc.data());
-      setOrganizations(orgs);
-    } catch (error) {
-      console.error("Error creating organization:", error);
-    }
-  };
-
-  const navigateToOrganization = (orgName) => {
+  const handleOrganizationClick = (orgName) => {
     console.log("Navigating to organization with name:", orgName);
-    navigate(`/organizations/${encodeURIComponent(orgName)}`);
+    navigate(`/organizations/${orgName}`);
   };
+
+  if (error) return <div>Error: {error}</div>;
 
   return (
     <div className="organizations-container">
       <h1>Organizations</h1>
-      <button onClick={() => setIsModalOpen(true)}>Create Organization</button>
+      <button onClick={() => navigate("/create-organization")}>
+        Create Organization
+      </button>
       <div className="organization-cards">
         {organizations.length > 0 ? (
-          organizations.map((org, index) => (
+          organizations.map((org) => (
             <div
-              key={index}
+              key={org.id}
               className="organization-card"
-              onClick={() => navigateToOrganization(org.name)}
+              onClick={() => handleOrganizationClick(org.name)}
             >
-              <h3>{org.name || "Unnamed Organization"}</h3>
+              <h2>{org.name}</h2>
             </div>
           ))
         ) : (
-          <p>No organizations available</p>
+          <p>You are not a member of any organizations.</p>
         )}
       </div>
-      <Modal
-        isOpen={isModalOpen}
-        onRequestClose={() => setIsModalOpen(false)}
-        className="modal"
-        overlayClassName="modal-overlay"
-      >
-        <h2>Create Organization</h2>
-        <input
-          type="text"
-          value={newOrganizationName}
-          onChange={(e) => setNewOrganizationName(e.target.value)}
-          placeholder="Organization Name"
-        />
-        <button onClick={createOrganization}>Create</button>
-      </Modal>
     </div>
   );
 };

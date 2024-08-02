@@ -8,14 +8,16 @@ import {
   getDocs,
 } from "firebase/firestore";
 import "../OrganizationDetails.css";
-import CardDetailsModal from "./CardDetailsModal"; // Ensure this import is correct
+import CardDetailsModal from "./CardDetailsModal";
+import InviteModal from "./InviteModal";
 
 const OrganizationDetails = () => {
   const { orgName } = useParams();
   const [organization, setOrganization] = useState(null);
   const [sharedCards, setSharedCards] = useState([]);
-  const [selectedCard, setSelectedCard] = useState(null); // State for selected card
-  const [isModalOpen, setIsModalOpen] = useState(false); // State for modal open/close
+  const [selectedCard, setSelectedCard] = useState(null);
+  const [isCardModalOpen, setIsCardModalOpen] = useState(false);
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [error, setError] = useState(null);
   const firestore = getFirestore();
 
@@ -33,19 +35,20 @@ const OrganizationDetails = () => {
         console.log(`Fetching details for organization name: ${orgName}`);
         const orgQuery = query(
           collection(firestore, "Organizations"),
-          where("name", "==", orgName)
+          where("name", "==", orgName) // Ensuring the name matches exactly
         );
         const orgQuerySnapshot = await getDocs(orgQuery);
 
         if (!orgQuerySnapshot.empty) {
-          const orgData = orgQuerySnapshot.docs[0].data();
+          const orgDoc = orgQuerySnapshot.docs[0];
+          const orgData = orgDoc.data();
           console.log("Organization Data:", orgData);
           setOrganization(orgData);
 
-          // Now fetch shared cards using the organization name
+          // Now fetch shared cards using the organizationId
           const sharedCardsQuery = query(
             collection(firestore, "OrganizationSharedCards"),
-            where("organizationName", "==", orgData.name) // Ensure consistency with the field in Firestore
+            where("organizationId", "==", orgDoc.id)
           );
           const sharedCardsSnapshot = await getDocs(sharedCardsQuery);
 
@@ -74,8 +77,13 @@ const OrganizationDetails = () => {
   }, [firestore, orgName]);
 
   const handleCardClick = (card) => {
-    setSelectedCard(card); // Set selected card data
-    setIsModalOpen(true); // Open the modal
+    console.log("Card clicked:", card);
+    setSelectedCard(card);
+    setIsCardModalOpen(true);
+  };
+
+  const handleInviteClick = () => {
+    setIsInviteModalOpen(true);
   };
 
   if (error) return <div>Error: {error}</div>;
@@ -134,13 +142,19 @@ const OrganizationDetails = () => {
           <p>No shared cards available</p>
         )}
       </div>
+      <button onClick={handleInviteClick}>Invite Members</button>
       {selectedCard && (
         <CardDetailsModal
-          isOpen={isModalOpen}
-          onRequestClose={() => setIsModalOpen(false)}
+          isOpen={isCardModalOpen}
+          onRequestClose={() => setIsCardModalOpen(false)}
           card={selectedCard}
         />
       )}
+      <InviteModal
+        isOpen={isInviteModalOpen}
+        onRequestClose={() => setIsInviteModalOpen(false)}
+        organizationName={organization?.name}
+      />
     </div>
   );
 };
