@@ -83,8 +83,11 @@ const ShareModal = ({ isOpen, onRequestClose, image }) => {
       if (!image || !image.imageUrl || !image.analysis) {
         throw new Error("Invalid image data. Please try again.");
       }
+      // Include both organizationId and organizationName for better querying flexibility
+      const org = organizations.find((org) => org.id === selectedOrganization);
       await addDoc(collection(firestore, "OrganizationSharedCards"), {
         organizationId: selectedOrganization,
+        organizationName: org.name,
         sharedBy: auth.currentUser.email,
         imageUrl: image.imageUrl,
         analysis: image.analysis,
