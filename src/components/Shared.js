@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "../styles.css";
+import "../datatable.css";
 
 const Shared = ({ images = [], setSelectedImage }) => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -68,6 +68,7 @@ const Shared = ({ images = [], setSelectedImage }) => {
                     href={contact.LinkedIn || "#"}
                     target="_blank"
                     rel="noopener noreferrer"
+                    className="linkedin-link"
                   >
                     {contact.LinkedIn || "N/A"}
                   </a>

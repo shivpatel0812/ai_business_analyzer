@@ -58,7 +58,10 @@ const Friends = () => {
       );
 
       const friendSnapshot = await getDocs(userQuery);
-      const userFriends = friendSnapshot.docs.map((doc) => doc.data().user2);
+      const userFriends = friendSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        email: doc.data().user2,
+      }));
 
       setFriends(userFriends);
     } catch (error) {
@@ -136,38 +139,87 @@ const Friends = () => {
     }
   };
 
+  const handleRemoveFriend = async (friendId) => {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    try {
+      // Delete both relationships in the Friends collection
+      const userFriendDoc = doc(firestore, "Friends", friendId);
+      const friendUserQuery = query(
+        collection(firestore, "Friends"),
+        where("user1", "==", friends.find((f) => f.id === friendId).email),
+        where("user2", "==", user.email)
+      );
+
+      const friendUserSnapshot = await getDocs(friendUserQuery);
+      const batch = writeBatch(firestore);
+
+      batch.delete(userFriendDoc);
+      friendUserSnapshot.docs.forEach((doc) => batch.delete(doc.ref));
+
+      await batch.commit();
+
+      // Update local state
+      setFriends(friends.filter((friend) => friend.id !== friendId));
+      toast.success("Friend removed successfully.");
+    } catch (error) {
+      console.error("Error removing friend:", error);
+      toast.error("Error removing friend.");
+    }
+  };
+
   return (
     <div className="friends-container">
       <ToastContainer />
-      <h1>Friends</h1>
-      <div>
-        <h2>Send Friend Request</h2>
+      <div className="friends-header">
+        <h1>Friends</h1>
         <input
           type="email"
           value={friendEmail}
           onChange={(e) => setFriendEmail(e.target.value)}
           placeholder="Enter friend's email"
+          className="friends-input"
         />
-        <button onClick={handleSendRequest}>Send Request</button>
+        <button onClick={handleSendRequest} className="send-request-button">
+          Send Request
+        </button>
       </div>
-      <div>
+      <div className="friend-requests">
         <h2>Friend Requests</h2>
-        {friendRequests.map((request) => (
-          <div key={request.id} className="friend-request">
-            <p>{request.sender}</p>
-            <button onClick={() => handleAcceptRequest(request.id)}>
-              Accept
-            </button>
-          </div>
-        ))}
+        {friendRequests.length > 0 ? (
+          friendRequests.map((request) => (
+            <div key={request.id} className="friend-request">
+              <p>{request.sender}</p>
+              <button
+                onClick={() => handleAcceptRequest(request.id)}
+                className="accept-button"
+              >
+                Accept
+              </button>
+            </div>
+          ))
+        ) : (
+          <p>No friend requests</p>
+        )}
       </div>
-      <div>
+      <div className="your-friends">
         <h2>Your Friends</h2>
-        {friends.map((friend, index) => (
-          <div key={index} className="friend-item">
-            <p>{friend}</p>
-          </div>
-        ))}
+        {friends.length > 0 ? (
+          friends.map((friend) => (
+            <div key={friend.id} className="friend-item">
+              <p>{friend.email}</p>
+              <button
+                onClick={() => handleRemoveFriend(friend.id)}
+                className="remove-button"
+              >
+                Remove
+              </button>
+            </div>
+          ))
+        ) : (
+          <p>You have no friends yet</p>
+        )}
       </div>
     </div>
   );

@@ -204,7 +204,7 @@ function NavBar({ isAuthenticated, onLogout }) {
       {isAuthenticated && (
         <>
           <Link to="/upload">Upload</Link>
-          <Link to="/shared">Shared</Link>
+          <Link to="/shared">Datatable</Link>
           <Link to="/about">About</Link>
           <Link to="/uploaded-cards">Uploaded Cards</Link>
           <Link to="/shared-cards">Shared Cards</Link>
