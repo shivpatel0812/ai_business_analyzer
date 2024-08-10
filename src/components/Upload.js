@@ -76,6 +76,9 @@ const Upload = ({ isOpen, onRequestClose, addImage, fetchUserImages }) => {
         }
       );
 
+      // Ensure the analysis response contains the expected fields
+      console.log("Fetched Analysis:", response.data);
+
       const newImage = {
         url: imageUrl,
         analysis: response.data,

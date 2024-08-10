@@ -3,14 +3,13 @@ import {
   getFirestore,
   collection,
   getDocs,
-  doc,
-  getDoc,
-  updateDoc,
   deleteDoc,
+  updateDoc, // Import updateDoc
+  doc, // Import doc
   where,
 } from "firebase/firestore";
 import { auth } from "../firebaseConfig";
-import "../OrganizationInvitations.css"; // Add CSS for styling
+import "../OrganizationInvitations.css";
 
 const OrganizationInvitations = () => {
   const [invitations, setInvitations] = useState([]);

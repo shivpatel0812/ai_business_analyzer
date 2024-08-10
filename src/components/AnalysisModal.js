@@ -18,6 +18,11 @@ const AnalysisModal = ({ isOpen, onRequestClose, image = {}, friends }) => {
             <strong>Name:</strong> {contact.Name}
           </div>
         )}
+        {contact.Role && (
+          <div>
+            <strong>Role:</strong> {contact.Role}
+          </div>
+        )}
         {contact.Company && (
           <div>
             <strong>Company:</strong> {contact.Company}

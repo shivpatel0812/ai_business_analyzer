@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getFirestore, collection, getDocs } from "firebase/firestore";
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import "../Organization.css";
 
@@ -16,20 +22,21 @@ const Organizations = () => {
       if (!auth.currentUser) return;
 
       try {
+        // Fetch organizations where the user is a member
         const orgQuerySnapshot = await getDocs(
-          collection(firestore, "Organizations")
+          query(
+            collection(firestore, "Organizations"),
+            where("members", "array-contains", auth.currentUser.email)
+          )
         );
-        const userOrganizations = orgQuerySnapshot.docs.filter((doc) => {
-          const data = doc.data();
-          return data.members && data.members.includes(auth.currentUser.email);
-        });
 
-        const userOrgData = userOrganizations.map((doc) => ({
+        const userOrganizations = orgQuerySnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
-        setOrganizations(userOrgData);
-        console.log("Fetched organizations:", userOrgData);
+
+        setOrganizations(userOrganizations);
+        console.log("Fetched organizations:", userOrganizations);
       } catch (error) {
         console.error("Error fetching organizations:", error);
         setError("Error fetching organizations.");
