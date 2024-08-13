@@ -2,6 +2,20 @@ import React, { useState } from "react";
 import Modal from "react-modal";
 import ShareModal from "./ShareModal"; // Import ShareModal
 import "../styles.css";
+import "../analysisstyle.css";
+
+const CollapsibleSection = ({ title, children }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="collapsible-section">
+      <h4 onClick={() => setIsOpen(!isOpen)} className="collapsible-title">
+        {title}
+      </h4>
+      {isOpen && <div className="collapsible-content">{children}</div>}
+    </div>
+  );
+};
 
 const AnalysisModal = ({ isOpen, onRequestClose, image = {}, friends }) => {
   const [contactModalOpen, setContactModalOpen] = useState(false);
@@ -38,6 +52,12 @@ const AnalysisModal = ({ isOpen, onRequestClose, image = {}, friends }) => {
             <strong>Phone:</strong> {contact.Phone}
           </div>
         )}
+        {contact.Email && (
+          <div>
+            <strong>Email:</strong>{" "}
+            <a href={`mailto:${contact.Email}`}>{contact.Email}</a>
+          </div>
+        )}
         {contact.LinkedIn && (
           <div>
             <strong>LinkedIn:</strong>{" "}
@@ -50,12 +70,33 @@ const AnalysisModal = ({ isOpen, onRequestClose, image = {}, friends }) => {
             </a>
           </div>
         )}
-        {contact.Email && (
-          <div>
-            <strong>Email:</strong> {contact.Email}
-          </div>
-        )}
       </div>
+    );
+  };
+
+  const renderCompanyInfo = (company) => {
+    if (!company || company === "No company name provided") {
+      return <div>No company name provided</div>;
+    }
+    return <div>{company}</div>;
+  };
+
+  const renderSummary = (summary = "") => {
+    const indexOfContactInfoSummary = summary.indexOf(
+      "Contact Information Summary:"
+    );
+
+    const filteredSummary =
+      indexOfContactInfoSummary !== -1
+        ? summary.slice(0, indexOfContactInfoSummary).trim()
+        : summary;
+
+    return (
+      <pre className="summary-section">
+        {" "}
+        {/* Add the custom class here */}
+        {filteredSummary}
+      </pre>
     );
   };
 
@@ -83,6 +124,16 @@ const AnalysisModal = ({ isOpen, onRequestClose, image = {}, friends }) => {
       onRequestClose={onRequestClose}
       className="modal"
       overlayClassName="modal-overlay"
+      style={{
+        content: {
+          position: "fixed",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: "70vw",
+          maxWidth: "1000px",
+        },
+      }}
     >
       <div className="modal-content">
         <button onClick={onRequestClose} className="modal-close">
@@ -92,30 +143,27 @@ const AnalysisModal = ({ isOpen, onRequestClose, image = {}, friends }) => {
           <img src={image.url} alt="Uploaded" className="modal-image" />
         )}
         <h3>Analysis Result:</h3>
-        <div className="report-section">
-          <h4 onClick={() => setContactModalOpen(true)}>Contact Information</h4>
+        <CollapsibleSection title="Contact Information">
           {renderContactInfo(image.analysis?.contact)}
-        </div>
-        <div className="report-section">
-          <h4 onClick={() => setCompanyModalOpen(true)}>Company Information</h4>
-          <pre>{image.analysis?.company}</pre>
-        </div>
-        <div className="report-section">
-          <h4>Summary</h4>
-          <pre>{image.analysis?.summary}</pre>
-        </div>
-        <div className="report-section">
-          <h4 onClick={() => setNewsModalOpen(true)}>News</h4>
+        </CollapsibleSection>
+        <CollapsibleSection title="Company Information">
+          {renderCompanyInfo(image.analysis?.company)}
+        </CollapsibleSection>
+        <CollapsibleSection title="Summary">
+          <div className="summary-section">
+            {" "}
+            {/* Wrap in div for custom class */}
+            {renderSummary(image.analysis?.summary)}
+          </div>
+        </CollapsibleSection>
+        <CollapsibleSection title="News">
           {renderNewsArticles(image.analysis?.news)}
-        </div>
-        <div className="report-section">
-          <h4 onClick={() => setInterviewModalOpen(true)}>
-            Interview Questions
-          </h4>
+        </CollapsibleSection>
+        <CollapsibleSection title="Interview Questions">
           <pre>
             {JSON.stringify(image.analysis?.interview_questions, null, 2)}
           </pre>
-        </div>
+        </CollapsibleSection>
         <button
           onClick={() => setShareModalOpen(true)}
           className="upload-button"
@@ -156,7 +204,7 @@ const AnalysisModal = ({ isOpen, onRequestClose, image = {}, friends }) => {
             &times;
           </button>
           <h4>Company Information</h4>
-          <pre>{image.analysis?.company}</pre>
+          {renderCompanyInfo(image.analysis?.company)}
         </div>
       </Modal>
 

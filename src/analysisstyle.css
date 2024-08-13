@@ -1,0 +1,143 @@
+/* Modal styling */
+.modal {
+  width: 70vw !important; /* Set the width to 70% of the viewport width */
+  max-width: 1000px !important; /* Set max-width */
+  margin: auto;
+  border-radius: 12px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+  overflow-y: auto;
+  background-color: transparent !important; /* Ensure no background color */
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  z-index: 1050; /* Make sure it's on top */
+}
+
+/* Modal content styling */
+.modal-content {
+  width: 100%; /* Ensure it fills the modal width */
+  background-color: transparent !important; /* Make the content background transparent */
+  border-radius: 12px;
+  padding: 0;
+  margin: auto;
+  overflow-wrap: break-word;
+  box-shadow: none; /* Remove shadow */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Close button */
+.modal-close {
+  position: absolute;
+  top: 0; /* Align the close button with the top edge */
+  right: 12px;
+  background: none;
+  border: none;
+  font-size: 26px; /* Larger close button */
+  cursor: pointer;
+  color: #666;
+}
+
+.modal-close:hover {
+  color: #333;
+}
+
+/* Overlay styling */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75); /* Darker background for overlay */
+  z-index: 1000;
+}
+
+/* Collapsible section styling */
+.collapsible-section {
+  border: 2px solid #007bff;
+  padding: 16px;
+  margin-bottom: 16px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  width: 250%; /* Adjust width to fit within modal */
+  max-width: 250%; /* Make sure it doesn't exceed modal width */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Align items to the left */
+  background-color: #ffffff; /* White background */
+  position: relative; /* Ensure it remains relative to its container */
+}
+
+.collapsible-section:hover {
+  transform: translateX(0) scale(1.02); /* Slightly enlarge the section */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Add a shadow for depth */
+}
+
+/* Ensure title and content take full width */
+.collapsible-title,
+.collapsible-content {
+  width: 100%;
+  text-align: left; /* Align content text to the left */
+}
+
+/* Report section styling */
+.report-section {
+  border: 2px solid #e2e2e2; /* Thicker grey border */
+  border-radius: 8px; /* More rounded corners */
+  padding: 18px; /* Increased padding inside the section */
+  margin-bottom: 18px; /* More space between sections */
+  background-color: #ffffff; /* White background */
+  width: 100%; /* Ensure it fills the available width */
+  box-sizing: border-box; /* Ensure padding is included in width calculation */
+}
+
+/* Contact information styling */
+.report-section div {
+  margin-bottom: 12px; /* More space between lines */
+}
+/* Summary section styling */
+.report-section.summary {
+  font-size: 18px; /* Increase the font size */
+  line-height: 1.6; /* Add more spacing between lines */
+  padding: 20px 30px; /* Increase padding on the sides and top/bottom */
+  margin-bottom: 20px; /* Add some margin at the bottom */
+  background-color: #ffffff; /* Ensure background is white */
+  border-radius: 8px; /* Round the corners slightly */
+}
+
+.report-section div strong {
+  font-size: 17px; /* Slightly larger font */
+  color: #333333; /* Darker font color */
+}
+
+.report-section a {
+  color: #0056b3; /* Darker blue color for links */
+  text-decoration: none;
+}
+
+.report-section a:hover {
+  text-decoration: underline;
+}
+
+/* Button styling */
+.upload-button {
+  font-size: 20px;
+  padding: 14px 24px;
+  background-color: #0056b3;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  width: 100%;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.upload-button:hover {
+  background-color: #003f7f; /* Even darker blue on hover */
+}
