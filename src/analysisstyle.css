@@ -1,26 +1,32 @@
 /* Modal styling */
+/* Modal styling */
+/* Modal styling */
+/* Modal styling */
+/* Modal styling */
+/* Modal styling */
+/* Modal styling */
 .modal {
-  width: 70vw !important; /* Set the width to 70% of the viewport width */
-  max-width: 1000px !important; /* Set max-width */
+  width: 80vw !important; /* Increase the width of the entire modal */
+  max-width: 1200px !important; /* Set a maximum width */
   margin: auto;
   border-radius: 12px;
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
-  overflow-y: auto;
-  background-color: transparent !important; /* Ensure no background color */
-  padding: 0;
+  background-color: #ffffff !important; /* Set the background color to white */
+  padding: 20px; /* Add padding around the content inside the modal */
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column; /* Ensure content stacks vertically */
   position: relative;
-  z-index: 1050; /* Make sure it's on top */
+  z-index: 1050; /* Ensure the modal is on top */
+  overflow-y: auto; /* Allow the modal to scroll */
+  max-height: 90vh; /* Ensure the modal doesn't exceed viewport height */
 }
 
 /* Modal content styling */
 .modal-content {
   width: 100%; /* Ensure it fills the modal width */
-  background-color: transparent !important; /* Make the content background transparent */
-  border-radius: 12px;
-  padding: 0;
+  background-color: transparent !important; /* Transparent background to show modal background */
+  border-radius: 12px; /* Keep the border-radius for a smooth look */
+  padding: 0; /* Remove padding from the content */
   margin: auto;
   overflow-wrap: break-word;
   box-shadow: none; /* Remove shadow */
