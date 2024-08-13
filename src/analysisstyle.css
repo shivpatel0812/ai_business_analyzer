@@ -1,10 +1,4 @@
 /* Modal styling */
-/* Modal styling */
-/* Modal styling */
-/* Modal styling */
-/* Modal styling */
-/* Modal styling */
-/* Modal styling */
 .modal {
   width: 80vw !important; /* Increase the width of the entire modal */
   max-width: 1200px !important; /* Set a maximum width */
@@ -106,6 +100,7 @@
 .report-section div {
   margin-bottom: 12px; /* More space between lines */
 }
+
 /* Summary section styling */
 .report-section.summary {
   font-size: 18px; /* Increase the font size */
@@ -146,4 +141,32 @@
 
 .upload-button:hover {
   background-color: #003f7f; /* Even darker blue on hover */
+}
+
+/* Contact Information Box Styling */
+.contact-info-box {
+  background-color: #f7f9fc;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.contact-info-box strong {
+  font-size: 18px;
+  color: #333;
+}
+
+.contact-info-box div {
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.contact-info-box a {
+  color: #0056b3;
+  text-decoration: none;
+}
+
+.contact-info-box a:hover {
+  text-decoration: underline;
 }

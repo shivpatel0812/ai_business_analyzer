@@ -26,7 +26,7 @@ const AnalysisModal = ({ isOpen, onRequestClose, image = {}, friends }) => {
 
   const renderContactInfo = (contact = {}) => {
     return (
-      <div>
+      <div className="contact-info-box">
         {contact.Name && (
           <div>
             <strong>Name:</strong> {contact.Name}
