@@ -150,16 +150,31 @@
   padding: 15px;
   margin-bottom: 15px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch; /* Align items to take up full width */
 }
 
-.contact-info-box strong {
-  font-size: 18px;
+.contact-info-item {
+  border: 1px solid #e0e0e0; /* Light border around each item */
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 8px;
+  display: flex; /* Use flexbox to align label and value */
+  justify-content: space-between; /* Space between label and value */
+  align-items: center; /* Center the text vertically */
+}
+
+.contact-info-item strong {
+  font-size: 20px; /* Larger font size for the label */
   color: #333;
+  margin-right: 20px; /* Add some space between the label and value */
 }
 
-.contact-info-box div {
-  margin-bottom: 10px;
-  font-size: 16px;
+.contact-info-item div {
+  font-size: 18px; /* Larger font size for the details */
+  text-align: right; /* Align value to the right */
+  flex: 1; /* Allow the value to take up remaining space */
 }
 
 .contact-info-box a {

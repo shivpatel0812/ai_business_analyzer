@@ -28,38 +28,38 @@ const AnalysisModal = ({ isOpen, onRequestClose, image = {}, friends }) => {
     return (
       <div className="contact-info-box">
         {contact.Name && (
-          <div>
+          <div className="contact-info-item">
             <strong>Name:</strong> {contact.Name}
           </div>
         )}
         {contact.Role && (
-          <div>
+          <div className="contact-info-item">
             <strong>Role:</strong> {contact.Role}
           </div>
         )}
         {contact.Company && (
-          <div>
+          <div className="contact-info-item">
             <strong>Company:</strong> {contact.Company}
           </div>
         )}
         {contact.Address && (
-          <div>
+          <div className="contact-info-item">
             <strong>Address:</strong> {contact.Address}
           </div>
         )}
         {contact.Phone && (
-          <div>
+          <div className="contact-info-item">
             <strong>Phone:</strong> {contact.Phone}
           </div>
         )}
         {contact.Email && (
-          <div>
+          <div className="contact-info-item">
             <strong>Email:</strong>{" "}
             <a href={`mailto:${contact.Email}`}>{contact.Email}</a>
           </div>
         )}
         {contact.LinkedIn && (
-          <div>
+          <div className="contact-info-item">
             <strong>LinkedIn:</strong>{" "}
             <a
               href={contact.LinkedIn}

@@ -18,6 +18,7 @@ const Upload = ({ isOpen, onRequestClose, addImage, fetchUserImages }) => {
   const [uploadedImage, setUploadedImage] = useState({});
   const [recentImage, setRecentImage] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isImageModalOpen, setImageModalOpen] = useState(false); // State for image modal
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
@@ -76,7 +77,6 @@ const Upload = ({ isOpen, onRequestClose, addImage, fetchUserImages }) => {
         }
       );
 
-      // Ensure the analysis response contains the expected fields
       console.log("Fetched Analysis:", response.data);
 
       const newImage = {
@@ -166,6 +166,14 @@ const Upload = ({ isOpen, onRequestClose, addImage, fetchUserImages }) => {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
+  const openImageModal = () => {
+    setImageModalOpen(true);
+  };
+
+  const closeImageModal = () => {
+    setImageModalOpen(false);
+  };
+
   return (
     <div>
       <h2>Upload Business Card</h2>
@@ -188,7 +196,8 @@ const Upload = ({ isOpen, onRequestClose, addImage, fetchUserImages }) => {
           <img
             src={recentImage.url}
             alt="Recent Upload"
-            style={{ maxWidth: "100%", height: "auto" }}
+            style={{ maxWidth: "100%", height: "auto", cursor: "pointer" }}
+            onClick={openImageModal} // Open modal on click
           />
         </div>
       )}
@@ -224,6 +233,21 @@ const Upload = ({ isOpen, onRequestClose, addImage, fetchUserImages }) => {
         onRequestClose={() => setAnalysisModalOpen(false)}
         image={uploadedImage}
       />
+      <Modal
+        isOpen={isImageModalOpen}
+        onRequestClose={closeImageModal}
+        className="image-modal"
+        overlayClassName="modal-overlay"
+        contentLabel="Image Preview"
+      >
+        <div>
+          <img
+            src={recentImage?.url}
+            alt="Preview"
+            style={{ maxWidth: "100%", height: "auto" }}
+          />
+        </div>
+      </Modal>
     </div>
   );
 };

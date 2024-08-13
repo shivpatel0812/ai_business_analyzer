@@ -13,29 +13,6 @@ header {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.navbar {
-  display: flex;
-  justify-content: center;
-  background-color: #4b79a1; /* Blue background */
-  padding: 10px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.navbar a {
-  margin: 0 15px;
-  text-decoration: none;
-  color: #fff;
-  font-size: 18px;
-  padding: 10px 15px;
-  border-radius: 4px;
-  transition: background-color 0.3s ease;
-}
-
-.navbar a:hover {
-  background-color: #366699; /* Darker blue */
-}
-
 .container {
   max-width: 1200px;
   margin: 0 auto;
@@ -52,36 +29,6 @@ h1 {
 h2 {
   font-size: 28px;
   margin-bottom: 20px;
-}
-
-.card-container {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-top: 20px; /* Added margin to separate from title */
-}
-
-.card {
-  display: inline-block;
-  width: 300px;
-  height: 200px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  margin: 15px;
-  overflow: hidden;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s, box-shadow 0.3s;
-}
-
-.card img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.card:hover {
-  transform: scale(1.05);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
 .modal {
@@ -244,4 +191,86 @@ h2 {
 
 .back-to-home:hover {
   text-decoration: underline;
+}
+
+/* Styles for displaying images and modals */
+.image-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+.card {
+  flex-basis: 28%; /* Define the initial size */
+  height: 250px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+  background-color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+}
+
+.card-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 20px; /* Increase space between cards */
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.card img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.image-thumbnail {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+}
+
+.image-title {
+  padding: 10px;
+  background-color: #f8f9fa;
+  text-align: center;
+  width: 100%;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.image-modal {
+  width: 80vw;
+  max-width: 800px;
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+  margin: auto;
+  overflow-y: auto;
+}
+
+.image-modal img {
+  width: 100%;
+  height: auto;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  z-index: 1000;
 }

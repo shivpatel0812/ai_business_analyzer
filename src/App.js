@@ -111,7 +111,6 @@ function App() {
   return (
     <div>
       <header>
-        <h1>AI Business Card Analyzer</h1>
         <NavBar isAuthenticated={isAuthenticated} onLogout={handleLogout} />
       </header>
       <main className="container">
@@ -199,22 +198,48 @@ function App() {
 
 function NavBar({ isAuthenticated, onLogout }) {
   return (
-    <nav className="navbar">
-      <Link to="/">Home</Link>
-      {isAuthenticated && (
-        <>
-          <Link to="/upload">Upload</Link>
-          <Link to="/shared">Datatable</Link>
-          <Link to="/about">About</Link>
-          <Link to="/uploaded-cards">Uploaded Cards</Link>
-          <Link to="/shared-cards">Shared Cards</Link>
-          <Link to="/friends">Friends</Link>
-          <Link to="/organizations">Organizations</Link>
-          <Link to="/organization-invitations">Invitations</Link>{" "}
-          {/* New link for invitations */}
-          <button onClick={onLogout}>Logout</button>
-        </>
-      )}
+    <nav
+      className={`navbar ${isAuthenticated ? "navbar-small" : "navbar-large"}`}
+    >
+      <div className="navbar-title">
+        <h1>AI Business Card Analyzer</h1>
+      </div>
+      <ul className="navbar-links">
+        <li>
+          <Link to="/">Home</Link>
+        </li>
+        {isAuthenticated && (
+          <>
+            <li>
+              <Link to="/upload">Upload</Link>
+            </li>
+            <li>
+              <Link to="/shared">Datatable</Link>
+            </li>
+            <li>
+              <Link to="/about">About</Link>
+            </li>
+            <li>
+              <Link to="/uploaded-cards">Uploaded Cards</Link>
+            </li>
+            <li>
+              <Link to="/shared-cards">Shared Cards</Link>
+            </li>
+            <li>
+              <Link to="/friends">Friends</Link>
+            </li>
+            <li>
+              <Link to="/organizations">Organizations</Link>
+            </li>
+            <li>
+              <Link to="/organization-invitations">Invitations</Link>
+            </li>
+            <li>
+              <button onClick={onLogout}>Logout</button>
+            </li>
+          </>
+        )}
+      </ul>
     </nav>
   );
 }

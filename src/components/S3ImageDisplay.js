@@ -27,10 +27,6 @@ const S3ImageDisplay = ({ images, openImageModal }) => {
                   className="card-image"
                 />
               )}
-              <div className="analysis">
-                {image.analysis &&
-                  JSON.stringify(image.analysis.M || image.analysis)}
-              </div>
             </div>
           ))
         ) : (
