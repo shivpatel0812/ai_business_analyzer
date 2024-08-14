@@ -8,7 +8,7 @@ import {
   getDocs,
 } from "firebase/firestore";
 import "../OrganizationDetails.css";
-import CardDetailsModal from "./CardDetailsModal";
+import AnalysisModal from "./AnalysisModal"; // Import AnalysisModal
 import InviteModal from "./InviteModal";
 
 const OrganizationDetails = () => {
@@ -144,10 +144,11 @@ const OrganizationDetails = () => {
       </div>
       <button onClick={handleInviteClick}>Invite Members</button>
       {selectedCard && (
-        <CardDetailsModal
+        <AnalysisModal
           isOpen={isCardModalOpen}
           onRequestClose={() => setIsCardModalOpen(false)}
-          card={selectedCard}
+          image={selectedCard} // Pass the selected card to AnalysisModal
+          friends={[]} // Pass empty friends array or adjust as needed
         />
       )}
       <InviteModal

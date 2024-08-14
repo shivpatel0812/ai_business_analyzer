@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
 import Modal from "react-modal";
 import "../SharedCards.css";
-import CardDetailsModal from "./CardDetailsModal";
+import AnalysisModal from "./AnalysisModal"; // Import AnalysisModal
 
 const SharedCards = () => {
   const [view, setView] = useState("all");
@@ -81,11 +81,14 @@ const SharedCards = () => {
           </div>
         ))}
       </div>
-      <CardDetailsModal
-        isOpen={isModalOpen}
-        onRequestClose={closeModal}
-        card={selectedCard}
-      />
+      {selectedCard && (
+        <AnalysisModal
+          isOpen={isModalOpen}
+          onRequestClose={closeModal}
+          image={selectedCard} // Pass the selected card to AnalysisModal
+          friends={[]} // Pass empty friends array or adjust as needed
+        />
+      )}
     </div>
   );
 };
