@@ -1,0 +1,33 @@
+/* Style for the entire summary section */
+.summary-section {
+  color: black; /* Set the text color to black */
+  font-family: Arial, sans-serif;
+}
+
+/* Specific style for the bold titles */
+.summary-section strong {
+  font-weight: bold;
+  color: black; /* Keep the title color black */
+}
+
+/* Optional: Add padding and margin for better spacing */
+.summary-section div {
+  margin-bottom: 15px;
+}
+
+/* You can further style the paragraph text if needed */
+.summary-section p {
+  margin: 0;
+}
+.summary-section {
+  font-family: Arial, sans-serif;
+}
+
+.summary-title {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.summary-content {
+  margin-bottom: 15px;
+}

@@ -1,17 +1,68 @@
-/* OrganizationDetails.css */
+.organization-details-container {
+  display: flex;
+  justify-content: flex-start;
+  padding: 20px;
+  background-color: #d4e6f1; /* Matches the background color */
+}
+
+.sidebar {
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 100px; /* Adjusts the top position to fit under the navbar */
+  left: 20px; /* Adjusts the left position to align with the left edge */
+}
+
+.invite-button,
+.members-toggle-button {
+  background-color: #007bff;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+.invite-button:hover,
+.members-toggle-button:hover {
+  background-color: #0056b3;
+}
+
+.members-list {
+  list-style-type: none;
+  padding-left: 0;
+  margin-top: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: white;
+  padding: 10px;
+}
+
+.members-list li {
+  padding: 5px 0;
+  border-bottom: 1px solid #ccc;
+}
+
+.content {
+  margin-left: 240px; /* Ensures the content moves to the right of the sidebar */
+  width: calc(100% - 240px);
+}
 
 .card-container {
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
+  justify-content: flex-start; /* Aligns the cards to the left */
 }
-
 .card {
   border: 1px solid #ccc;
   padding: 20px;
   width: 200px;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  background-color: transparent; /* Keep background transparent */
 }
 
 .card-image {

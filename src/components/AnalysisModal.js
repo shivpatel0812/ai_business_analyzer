@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import Modal from "react-modal";
-import ShareModal from "./ShareModal"; // Import ShareModal
+import ShareModal from "./ShareModal";
 import "../styles.css";
 import "../analysisstyle.css";
+import "../summary.css";
 
 const CollapsibleSection = ({ title, children }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -82,21 +83,26 @@ const AnalysisModal = ({ isOpen, onRequestClose, image = {}, friends }) => {
   };
 
   const renderSummary = (summary = "") => {
-    const indexOfContactInfoSummary = summary.indexOf(
-      "Contact Information Summary:"
-    );
-
-    const filteredSummary =
-      indexOfContactInfoSummary !== -1
-        ? summary.slice(0, indexOfContactInfoSummary).trim()
-        : summary;
+    const paragraphs = summary.split("\n\n");
 
     return (
-      <pre className="summary-section">
-        {" "}
-        {/* Add the custom class here */}
-        {filteredSummary}
-      </pre>
+      <div className="summary-section">
+        {paragraphs.map((paragraph, index) => {
+          // Convert any **text** to bold by replacing with <strong> tags
+          const formattedParagraph = paragraph.replace(
+            /\*\*(.+?)\*\*/,
+            (match, p1) => `<strong>${p1}</strong>`
+          );
+
+          return (
+            <div
+              key={index}
+              dangerouslySetInnerHTML={{ __html: formattedParagraph }}
+              className="summary-content"
+            />
+          );
+        })}
+      </div>
     );
   };
 

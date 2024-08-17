@@ -1,12 +1,56 @@
-.friends-container {
-  max-width: 900px;
-  margin: 50px auto;
+/* Overall Container */
+.friends-profile-container {
+  display: flex;
+  justify-content: space-between; /* Distribute space between profile and friends container */
+  align-items: flex-start; /* Align items at the top */
   padding: 20px;
-  background-color: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 100%; /* Ensure it takes the full width */
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: 20px; /* Add space between sections */
+  flex-wrap: nowrap; /* Prevent wrapping */
+  height: auto; /* Let the container adjust based on content */
 }
 
+.profile-container {
+  width: 30%; /* Adjust this percentage for better alignment */
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start; /* Align content at the top */
+  min-height: 100%; /* Make the section take the full height of the container */
+  height: 100%; /* Ensure this section stretches */
+  position: relative;
+  top: 50px; /* Move the container higher on the screen */
+}
+
+/* Profile Picture */
+.profile-pic {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 10px;
+  border: 5px solid black; /* Add a black border */
+}
+
+/* Friends Section */
+.friends-container {
+  width: 65%; /* Adjust this percentage to match the profile container */
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* Align content at the top */
+}
+
+/* Friends Header */
 .friends-header {
   display: flex;
   flex-direction: column;
@@ -19,6 +63,7 @@
   margin-bottom: 10px;
 }
 
+/* Friends Input */
 .friends-input {
   width: calc(100% - 40px);
   padding: 10px;
@@ -33,6 +78,7 @@
   border-color: #007bff;
 }
 
+/* Send Request Button */
 .send-request-button {
   padding: 10px 20px;
   background-color: #007bff;
@@ -48,28 +94,47 @@
   background-color: #0056b3;
 }
 
-.friend-requests,
-.your-friends {
-  margin-top: 20px;
-}
-
-.friend-request,
+/* Friend Item Container */
 .friend-item {
-  padding: 15px;
-  border-bottom: 1px solid #ddd;
+  width: 150px; /* Set fixed width */
+  height: 200px; /* Adjust height to fit profile picture and username */
   display: flex;
-  justify-content: space-between;
+  flex-direction: column; /* Stack profile picture and username vertically */
+  justify-content: center;
   align-items: center;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-bottom: 10px; /* Add spacing between friend items */
+  text-align: center; /* Center the text inside the box */
+  overflow: hidden; /* Hide text that overflows the box */
 }
 
-.friend-request p,
-.friend-item p {
-  margin: 0;
+.friend-item:hover {
+  background-color: #e9e9e9;
 }
 
-.accept-button,
+/* Friend Profile Picture */
+.friend-profile-pic {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 10px;
+}
+
+/* Friend Username Text */
+.friend-username {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+}
+
+/* Remove Button */
 .remove-button {
-  background-color: #28a745;
+  background-color: #dc3545;
   color: white;
   border: none;
   border-radius: 8px;
@@ -77,14 +142,32 @@
   cursor: pointer;
 }
 
-.remove-button {
-  background-color: #dc3545;
-}
-
-.accept-button:hover {
-  background-color: #218838;
-}
-
 .remove-button:hover {
   background-color: #c82333;
+}
+
+/* Modal Styles */
+.modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  right: auto;
+  bottom: auto;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  z-index: 1000;
 }

@@ -77,7 +77,7 @@ const Upload = ({ isOpen, onRequestClose, addImage, fetchUserImages }) => {
         }
       );
 
-      console.log("Fetched Analysis:", response.data);
+      console.log("Fetched Analysis:", response.data, response.JSON);
 
       const newImage = {
         url: imageUrl,
@@ -93,8 +93,13 @@ const Upload = ({ isOpen, onRequestClose, addImage, fetchUserImages }) => {
       await saveImageMetadata(userId, imageId, imageUrl, response.data);
       await fetchUserImages(userId);
     } catch (err) {
-      console.error("Error fetching analysis:", err.message);
-      setError("An error occurred while fetching the analysis.");
+      console.error("Error fetching analysis:", err);
+      if (err.response) {
+        console.error("Error response data:", err.response.data);
+        setError(`An error occurred: ${err.response.data.message}`);
+      } else {
+        setError("An error occurred while fetching the analysis.");
+      }
     } finally {
       setLoading(false);
     }
