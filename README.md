@@ -19,6 +19,14 @@ The **AI Business Card Analyzer** is a personal project designed to digitize and
 - **Machine Learning**: TensorFlow and OpenAI API
 - **Web Scraping**: Integrated to fetch external sources
 
+- ## Adding Images to the README
+
+To add images to your README, use the following Markdown syntax:
+
+### Syntax:
+```markdown
+![Alt Text](image-url)
+
 ## Installation and Setup:
 
 ### 1. Install Yarn
