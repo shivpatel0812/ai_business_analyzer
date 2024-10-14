@@ -28,14 +28,6 @@ If you don't have Yarn installed on your system, you can install it by following
 - Using Homebrew (for macOS):
   ```bash
   brew install yarn
-
-### 1. Install Yarn
-
-If you don't have Yarn installed on your system, you can install it by following these steps:
-
-- Using Homebrew (for macOS):
-  ```bash
-  brew install yarn
 ### 2. Clone the Repository
 
 
