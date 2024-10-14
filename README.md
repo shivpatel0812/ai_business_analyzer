@@ -18,6 +18,8 @@ The **AI Business Card Analyzer** is a personal project designed to digitize and
 - **Data Storage**: AWS DynamoDB
 - **Machine Learning**: TensorFlow and OpenAI API
 - **Web Scraping**: Integrated to fetch external sources
+  
+## Example Photos 
 
 <div style="display: flex;">
   <img src="./Photos/E168662B-1566-42BE-B43F-E53B350DDE74.png" alt="Alt Text" width="500"/>
@@ -26,9 +28,10 @@ The **AI Business Card Analyzer** is a personal project designed to digitize and
   <img src="./Photos/9629082F-5F1E-4C40-8413-E7D08B362F38.png" alt="Alt Text" width="500"/>
 </div>
 
-
-
-
+## Future Direction
+- **Complte full production/deployment of Web and Mobile Application
+- **Add/train ai chat box to go along each card
+- **Feature to create cards on app and share via tapping 2 devices
 
 
 ### 1. Install Yarn
