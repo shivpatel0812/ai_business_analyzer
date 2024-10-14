@@ -6,7 +6,7 @@ The **AI Business Card Analyzer** is a personal project designed to digitize and
 
 ### Key Features:
 - **Image Analysis**: Uses AI to extract and display contact information.
-- **Company and Role Summaries**: Automatically generates summaries using web scraping and APIs.
+- **Company and Role Summaries**: Automatically generates summaries using trained GPT model, web scraping, and APIs.
 - **Commenting System**: Users can add comments to the analysis for future reference.
 - **Sharing with Friends**: Share business cards, comments, and analyses with friends and groups.
 - **Easy Search**: Organized and searchable by keywords from the extracted analysis.
