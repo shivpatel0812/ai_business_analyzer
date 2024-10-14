@@ -68,11 +68,3 @@ If you don't have Yarn installed on your system, you can install it by following
 - Using Homebrew (for macOS):
   ```bash
   yarn build
-
-
-
-
-
-
-
-
