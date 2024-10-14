@@ -29,24 +29,50 @@ If you don't have Yarn installed on your system, you can install it by following
   ```bash
   brew install yarn
 
-### Clone the Repository
-Clone repository
+### 1. Install Yarn
 
+If you don't have Yarn installed on your system, you can install it by following these steps:
+
+- Using Homebrew (for macOS):
+  ```bash
+  brew install yarn
+### 2. Clone the Repository
+
+
+
+- Using Homebrew (for macOS):
   ```bash
   git clone https://github.com/your-username/ai-business-card-analyzer.git
 
-###Install Dependencies
+### 3. Install Dependencies
+
+If you don't have Yarn installed on your system, you can install it by following these steps:
+
+- Using Homebrew (for macOS):
   ```bash
   cd ai-business-card-analyzer
   yarn install
 
-### Start the Development Server
+### 4. Start the Development Server
+
+
+
+- Using Homebrew (for macOS):
   ```bash
   yarn start
 
-### Build for Production
+### 5. Build for Production
+
+
+
+- Using Homebrew (for macOS):
   ```bash
   yarn build
+
+
+
+
+
 
 
 
