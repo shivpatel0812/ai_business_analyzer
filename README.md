@@ -21,9 +21,10 @@ The **AI Business Card Analyzer** is a personal project designed to digitize and
 
 ## Installation and Setup:
 
-To set up this project locally, follow these steps:
+### 1. Install Yarn
 
-### 1. Clone the repository:
-```bash
-git clone https://github.com/username/ai-business-card-analyzer.git
-cd ai-business-card-analyzer
+If you don't have Yarn installed on your system, you can install it by following these steps:
+
+- Using Homebrew (for macOS):
+  ```bash
+  brew install yarn
