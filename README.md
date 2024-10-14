@@ -19,15 +19,12 @@ The **AI Business Card Analyzer** is a personal project designed to digitize and
 - **Machine Learning**: TensorFlow and OpenAI API
 - **Web Scraping**: Integrated to fetch external sources
 
-## Example Photos
-- **All Card View**
-- ![Alt Text](./Photos/E168662B-1566-42BE-B43F-E53B350DDE74.png)
-- **Analysis Structure**
-- ![Alt Text](./Photos/97CAE22D-4BD9-43F8-8BDC-1BD0F7B28B09.png)
-- **Analysis View**
-- ![Alt Text](./Photos/02FE6090-09D2-4D1B-BB79-143AA775D3FE.png)
-- **Organizations/Group Chat**
-- ![Alt Text](./Photos/9629082F-5F1E-4C40-8413-E7D08B362F38.png)
+<div style="display: flex;">
+  <img src="./Photos/E168662B-1566-42BE-B43F-E53B350DDE74.png" alt="Alt Text" width="150"/>
+  <img src="./Photos/97CAE22D-4BD9-43F8-8BDC-1BD0F7B28B09.png" alt="Alt Text" width="150"/>
+  <img src="./Photos/9629082F-5F1E-4C40-8413-E7D08B362F38.png" alt="Alt Text" width="150"/>
+  <img src="./Photos/02FE6090-09D2-4D1B-BB79-143AA775D3FE.png" alt="Alt Text" width="150"/>
+</div>
 
 
 
