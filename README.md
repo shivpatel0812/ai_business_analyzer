@@ -30,22 +30,23 @@ If you don't have Yarn installed on your system, you can install it by following
   brew install yarn
 
 ### Clone the Repository
+Clone repository
 
-bash
-git clone https://github.com/your-username/ai-business-card-analyzer.git
+  ```bash
+  git clone https://github.com/your-username/ai-business-card-analyzer.git
 
 ###Install Dependencies
-```bash
-cd ai-business-card-analyzer
-yarn install
+  ```bash
+  cd ai-business-card-analyzer
+  yarn install
 
 ### Start the Development Server
-```bash
-yarn start
+  ```bash
+  yarn start
 
 ### Build for Production
-```bash
-yarn build
+  ```bash
+  yarn build
 
 
 
