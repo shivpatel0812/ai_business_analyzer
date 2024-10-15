@@ -22,10 +22,10 @@ The **AI Business Card Analyzer** is a personal project designed to digitize and
 ## Example Photos 
 
 <div style="display: flex;">
-  <img src="./Photos/E168662B-1566-42BE-B43F-E53B350DDE74.png" alt="Alt Text" width="450"/>
-  <img src="./Photos/97CAE22D-4BD9-43F8-8BDC-1BD0F7B28B09.png" alt="Alt Text" width="450"/>
-  <img src="./Photos/02FE6090-09D2-4D1B-BB79-143AA775D3FE.png" alt="Alt Text" width="450"/>
-  <img src="./Photos/9629082F-5F1E-4C40-8413-E7D08B362F38.png" alt="Alt Text" width="450"/>
+  <img src="./Photos/E168662B-1566-42BE-B43F-E53B350DDE74.png" alt="Alt Text" width="400"/>
+  <img src="./Photos/97CAE22D-4BD9-43F8-8BDC-1BD0F7B28B09.png" alt="Alt Text" width="400"/>
+  <img src="./Photos/02FE6090-09D2-4D1B-BB79-143AA775D3FE.png" alt="Alt Text" width="400"/>
+  <img src="./Photos/9629082F-5F1E-4C40-8413-E7D08B362F38.png" alt="Alt Text" width="400"/>
 </div>
 
 ## Future Direction
